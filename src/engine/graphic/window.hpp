@@ -69,6 +69,8 @@ public:
 
   virtual void set_capture_mouse(bool value) = 0;
 
+  virtual void terminate() = 0;
+
 protected:
   int width{};
   int height{};

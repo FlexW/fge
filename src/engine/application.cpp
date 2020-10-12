@@ -85,7 +85,11 @@ bool Application::on_close(const WindowCloseEvent *const /*event*/)
   return false;
 }
 
-void Application::terminate_application() { terminate_logger(); }
+void Application::terminate_application()
+{
+  graphic_manager->terminate();
+  terminate_logger();
+}
 
 int Application::run()
 {
@@ -111,6 +115,13 @@ void Application::main_loop()
 {
   while (!close_app)
   {
+
+    layer_stack.on_render();
+
+    graphic_manager->begin_imgui_render();
+    layer_stack.on_imgui_render();
+    graphic_manager->end_imgui_render();
+
     graphic_manager->flush();
   }
 

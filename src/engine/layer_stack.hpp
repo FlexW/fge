@@ -19,6 +19,8 @@ public:
 
   void on_render();
 
+  void on_imgui_render();
+
 private:
   std::vector<std::unique_ptr<Layer>> layers;
 };

@@ -1,4 +1,5 @@
 #include "glfw_window.hpp"
+#include "GLFW/glfw3.h"
 #include "application.hpp"
 #include "graphic/window.hpp"
 #include "platform/opengl/gl.hpp"
@@ -268,5 +269,7 @@ void GlfwWindow::set_capture_mouse(bool value)
 
   glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 }
+
+void GlfwWindow::terminate() { glfwTerminate(); }
 
 } // namespace Fge::Glfw

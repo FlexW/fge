@@ -22,6 +22,8 @@ public:
 
   virtual void set_capture_mouse(bool value) override;
 
+  virtual void terminate() override;
+
   void on_key(int key, int scancode, int action, int mods);
 
   void on_window_framebuffer_size(int width, int height);

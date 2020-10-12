@@ -40,4 +40,12 @@ void LayerStack::on_render()
   }
 }
 
+void LayerStack::on_imgui_render()
+{
+  for (auto &layer : layers)
+  {
+    layer->imgui_render();
+  }
+}
+
 } // namespace Fge

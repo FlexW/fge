@@ -17,6 +17,8 @@ public:
   virtual void fixed_update(float frametime) = 0;
 
   virtual void render() = 0;
+
+  virtual void imgui_render() = 0;
 };
 
 } // namespace Fge
