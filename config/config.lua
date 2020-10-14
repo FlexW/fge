@@ -12,6 +12,6 @@ window = {
    height = 720,
    title = "FGE",
    fullscreen = false,
-   samples = 8,
+   samples = 0,
    vsync = false
 }

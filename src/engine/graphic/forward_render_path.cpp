@@ -1,0 +1,32 @@
+#include "forward_render_path.hpp"
+#include "application.hpp"
+
+namespace Fge
+{
+
+void ForwardRenderPath::render(const glm::mat4 &projection_mat,
+                               const Camera &   camera)
+{
+  auto app             = Application::get_instance();
+  auto graphic_manager = app->get_graphic_manager();
+  auto renderer        = graphic_manager->get_renderer();
+
+  renderer->clear_color();
+  renderer->clear_depth();
+
+  const auto &renderables = renderer->get_renderables();
+
+  const auto view_mat = camera.get_view_matrix();
+  for (auto renderable : renderables)
+  {
+    auto material = renderable->get_material();
+    material->set_uniform("projection_mat", projection_mat);
+    material->set_uniform("view_mat", view_mat);
+
+    renderer->draw(*renderable->get_vertex_array(),
+                   *renderable->get_index_buffer(),
+                   *material);
+  }
+}
+
+} // namespace Fge

@@ -29,6 +29,8 @@ target_link_libraries(
   fmt::fmt-header-only
   date
   imgui
+  assimp
+  glm
   )
 
 target_compile_features(engine PUBLIC cxx_std_17)

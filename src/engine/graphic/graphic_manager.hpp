@@ -1,7 +1,9 @@
 #pragma once
 
 #include "platform/glfw/glfw.hpp"
+#include "render_path.hpp"
 #include "render_view.hpp"
+#include "renderer.hpp"
 #include "std.hpp"
 #include "window.hpp"
 
@@ -29,8 +31,20 @@ public:
 
   void end_imgui_render();
 
+  void begin_render();
+
+  void end_render();
+
+  std::shared_ptr<Renderer> get_renderer() { return renderer; }
+
+  std::shared_ptr<RenderPath> get_render_path() { return render_path; }
+
 private:
   std::shared_ptr<Window> window{};
+
+  std::shared_ptr<Renderer> renderer{};
+
+  std::shared_ptr<RenderPath> render_path{};
 
   void init_imgui(GLFWwindow *window);
 

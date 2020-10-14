@@ -30,6 +30,11 @@ public:
 
 private:
   uint32_t target_id{};
+
+  Target   target;
+  uint32_t width;
+  uint32_t height;
+  uint32_t samples;
 };
 
 } // namespace Fge

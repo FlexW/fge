@@ -1,6 +1,8 @@
 #include "application.hpp"
 #include "log/io_log_sink.hpp"
 #include "log/log.hpp"
+#include "scene/scene_manager.hpp"
+#include <memory>
 
 namespace Fge
 {
@@ -74,6 +76,9 @@ void Application::init_application(int /*argc*/, char ** /*argv*/)
   // Create graphic manager
   graphic_manager = std::make_shared<GraphicManager>();
 
+  // Create scene manager
+  scene_manager = std::make_shared<SceneManager>();
+
   // Register for events
   event_manager->subscribe(this, &Application::on_close);
 }
@@ -116,11 +121,15 @@ void Application::main_loop()
   while (!close_app)
   {
 
+    graphic_manager->begin_render();
+
     layer_stack.on_render();
 
     graphic_manager->begin_imgui_render();
     layer_stack.on_imgui_render();
     graphic_manager->end_imgui_render();
+
+    graphic_manager->end_render();
 
     graphic_manager->flush();
   }

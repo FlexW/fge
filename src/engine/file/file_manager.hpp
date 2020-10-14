@@ -1,6 +1,7 @@
 #pragma once
 
 #include "std.hpp"
+#include <filesystem>
 
 namespace Fge
 {
@@ -27,11 +28,31 @@ public:
     return app_cache_path;
   }
 
+  const std::filesystem::path &get_shaders_path() const
+  {
+    return app_shader_path;
+  }
+
+  const std::filesystem::path &get_meshes_path() const
+  {
+    return app_meshes_path;
+  }
+
+  const std::filesystem::path &get_textures_path() const
+  {
+    return app_textures_path;
+  }
+
+  std::string read_text_file(const std::string &filepath);
+
 private:
   std::filesystem::path app_root_path;
   std::filesystem::path app_config_path;
   std::filesystem::path app_res_path;
   std::filesystem::path app_cache_path;
+  std::filesystem::path app_shader_path;
+  std::filesystem::path app_meshes_path;
+  std::filesystem::path app_textures_path;
 };
 
 } // namespace Fge

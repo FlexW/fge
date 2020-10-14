@@ -7,6 +7,7 @@
 #include "layer.hpp"
 #include "layer_stack.hpp"
 #include "resources/resource_manager.hpp"
+#include "scene/scene_manager.hpp"
 #include "std.hpp"
 
 namespace Fge
@@ -43,6 +44,8 @@ public:
     return graphic_manager;
   }
 
+  std::shared_ptr<SceneManager> get_scene_manager() { return scene_manager; }
+
 private:
   static std::once_flag               instance_created;
   static std::shared_ptr<Application> instance;
@@ -54,6 +57,7 @@ private:
   std::shared_ptr<FileManger>      file_system_manager{};
   std::shared_ptr<ResourceManager> resource_manager{};
   std::shared_ptr<GraphicManager>  graphic_manager{};
+  std::shared_ptr<SceneManager>    scene_manager{};
 
   bool close_app = false;
 
