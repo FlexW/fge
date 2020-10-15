@@ -3,6 +3,8 @@
 #include "graphic/camera.hpp"
 #include "graphic/render_view.hpp"
 #include "graphic/window.hpp"
+#include "imgui_views/dockspace.hpp"
+#include "imgui_views/viewport.hpp"
 #include "layer.hpp"
 
 namespace Fge
@@ -28,22 +30,18 @@ public:
   bool on_mouse_event(const MouseEvent *const event);
 
 private:
-  std::shared_ptr<RenderView> scene_render_view{};
-
   int32_t window_width    = 0;
   int32_t window_height   = 0;
   int32_t samples         = 0;
   int32_t viewport_width  = 0;
   int32_t viewport_height = 0;
 
-  glm::mat4 projection_mat{};
-
   bool   move_camera = false;
   Camera editor_camera;
 
-  void create_scene_render_view();
-
-  void recreate_projection_mat();
+  // ImGui Views
+  EditorViews::DockSpace     dockspace;
+  EditorViews::SceneViewport scene_viewport;
 };
 
 } // namespace Fge

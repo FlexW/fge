@@ -2,7 +2,6 @@
 #include "log/io_log_sink.hpp"
 #include "log/log.hpp"
 #include "scene/scene_manager.hpp"
-#include <memory>
 
 namespace Fge
 {
@@ -50,7 +49,20 @@ void Application::init_logging()
     log_level = LogType::Trace;
   }
 
-  start_logger<IOLogSink>(log_level);
+  const std::string log_mode_req =
+      config_manager->get_config()["game"]["log_mode"];
+  LogMode log_mode = LogMode::Async;
+
+  if (log_mode_req == "ASYNC")
+  {
+    log_mode = LogMode::Async;
+  }
+  else if (log_mode_req == "SYNC")
+  {
+    log_mode = LogMode::Sync;
+  }
+
+  start_logger<IOLogSink>(log_level, log_mode);
 }
 
 void Application::init_application(int /*argc*/, char ** /*argv*/)
@@ -141,5 +153,7 @@ void Application::push_layer(std::unique_ptr<Layer> layer)
 {
   layer_stack.push_layer(std::move(layer));
 }
+
+void Application::close() { close_app = true; }
 
 } // namespace Fge

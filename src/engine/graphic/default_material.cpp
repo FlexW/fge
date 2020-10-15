@@ -1,6 +1,7 @@
 #include "default_material.hpp"
 #include "application.hpp"
 #include "graphic/material.hpp"
+#include "util/assert.hpp"
 
 namespace Fge
 {
@@ -34,6 +35,42 @@ void DefaultMaterial::set_world_matrix(const glm::mat4 &world_mat)
   set_uniform("world_mat", world_mat);
 }
 
+void DefaultMaterial::set_ambient_texture(std::shared_ptr<Texture2D> tex)
+{
+  FGE_ASSERT(tex);
+  set_uniform("in_ambient_tex", tex);
+
+  if (!shader_defines_contains("AMBIENT_TEX"))
+  {
+    shader_defines.push_back("AMBIENT_TEX");
+    shader_changed = true;
+  }
+}
+
+void DefaultMaterial::set_diffuse_texture(std::shared_ptr<Texture2D> tex)
+{
+  FGE_ASSERT(tex);
+  set_uniform("in_diffuse_tex", tex);
+
+  if (!shader_defines_contains("DIFFUSE_TEX"))
+  {
+    shader_defines.push_back("DIFFUSE_TEX");
+    shader_changed = true;
+  }
+}
+
+void DefaultMaterial::set_specular_texture(std::shared_ptr<Texture2D> tex)
+{
+  FGE_ASSERT(tex);
+  set_uniform("in_specular_tex", tex);
+
+  if (!shader_defines_contains("SPECULAR_TEX"))
+  {
+    shader_defines.push_back("SPECULAR_TEX");
+    shader_changed = true;
+  }
+}
+
 void DefaultMaterial::regenerate_shader()
 {
   auto app      = Application::get_instance();
@@ -62,6 +99,18 @@ std::shared_ptr<Material> DefaultMaterial::clone()
   }
 
   return new_material;
+}
+
+bool DefaultMaterial::shader_defines_contains(const std::string &define)
+{
+  auto iter = std::find(shader_defines.begin(), shader_defines.end(), define);
+
+  if (iter != shader_defines.end())
+  {
+    return true;
+  }
+
+  return false;
 }
 
 } // namespace Fge

@@ -10,6 +10,7 @@ IndexBuffer::IndexBuffer(const std::vector<uint32_t> &indices)
       indices(indices)
 {
   glGenBuffers(1, &id);
+  trace("IndexBuffer", "Created index buffer with id: {}", id);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, id);
   glBufferData(GL_ELEMENT_ARRAY_BUFFER,
                get_count() * sizeof(unsigned),

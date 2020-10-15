@@ -1,6 +1,7 @@
 game = {
    frametime = 1 / 60,
-   log_level = "Debug" -- Debug, Trace, Info, Warning, Error
+   log_level = "Debug", -- Debug, Trace, Info, Warning, Error
+   log_mode = "SYNC" -- ASYNC, SYNC
 }
 
 opengl = {
@@ -12,6 +13,6 @@ window = {
    height = 720,
    title = "FGE",
    fullscreen = false,
-   samples = 0,
+   samples = 8,
    vsync = false
 }

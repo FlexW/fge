@@ -6,7 +6,11 @@
 namespace Fge::Gl
 {
 
-VertexArray::VertexArray() { glGenVertexArrays(1, &id); }
+VertexArray::VertexArray()
+{
+  glGenVertexArrays(1, &id);
+  trace("VertexArray", "Created vertex array with id: {}", id);
+}
 
 VertexArray::~VertexArray()
 {

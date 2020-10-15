@@ -3,6 +3,7 @@
 #include "graphic/camera.hpp"
 #include "graphic/imgui.hpp"
 #include "graphic/window.hpp"
+#include "imgui_views/dockspace.hpp"
 #include "scene/actor.hpp"
 #include "scene/components/components.hpp"
 #include "scene/scene.hpp"
@@ -24,8 +25,8 @@ void EditorLayer::init()
   window_width    = window->get_width();
   window_height   = window->get_height();
 
-  recreate_projection_mat();
-  create_scene_render_view();
+  // Init imgui views
+  scene_viewport.init();
 
   // Subscribe events
   event_manager->subscribe(this, &EditorLayer::on_window_resize_event, 0);
@@ -37,8 +38,12 @@ void EditorLayer::init()
   auto scene     = std::make_shared<Scene>();
   auto actor     = scene->add_actor<Actor>();
   auto mesh_comp = actor->add_component<MeshComponent>();
-  // mesh_comp->set_mesh_from_file("bunny.obj");
   mesh_comp->set_mesh_from_file("character.dae");
+
+  actor = scene->add_actor<Actor>();
+  actor->set_position(glm::vec3(3.0f, 0.0f, 0.0f));
+  mesh_comp = actor->add_component<MeshComponent>();
+  mesh_comp->set_mesh_from_file("bunny.obj");
 
   auto scene_manager = app->get_scene_manager();
   scene_manager->set_scene(scene);
@@ -50,40 +55,15 @@ void EditorLayer::update(float /*delta_time*/) {}
 
 void EditorLayer::fixed_update(float /*frametime*/) {}
 
-void EditorLayer::render()
-{
-  scene_render_view->render(projection_mat,
-                            editor_camera,
-                            viewport_width,
-                            viewport_height,
-                            samples);
-}
+void EditorLayer::render() {}
 
 void EditorLayer::imgui_render()
 {
+  dockspace.draw();
+  scene_viewport.draw(editor_camera);
+
   bool show = true;
   ImGui::ShowDemoWindow(&show);
-}
-
-void EditorLayer::create_scene_render_view()
-{
-  auto app             = Application::get_instance();
-  auto graphic_manager = app->get_graphic_manager();
-
-  scene_render_view =
-      graphic_manager->create_render_view(RenderView::Target::Backbuffer,
-                                          viewport_width,
-                                          viewport_height,
-                                          samples);
-}
-
-void EditorLayer::recreate_projection_mat()
-{
-  projection_mat =
-      glm::perspective(editor_camera.get_zoom(),
-                       static_cast<float>(viewport_width) / viewport_height,
-                       0.1f,
-                       500.0f);
 }
 
 bool EditorLayer::on_window_resize_event(const WindowResizeEvent *const event)
@@ -93,8 +73,6 @@ bool EditorLayer::on_window_resize_event(const WindowResizeEvent *const event)
 
   viewport_width  = window_width;
   viewport_height = window_height;
-
-  recreate_projection_mat();
 
   return false;
 }

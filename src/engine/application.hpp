@@ -46,6 +46,8 @@ public:
 
   std::shared_ptr<SceneManager> get_scene_manager() { return scene_manager; }
 
+  void close();
+
 private:
   static std::once_flag               instance_created;
   static std::shared_ptr<Application> instance;

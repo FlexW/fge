@@ -21,6 +21,15 @@ public:
 
   void set_clear_color(float r, float g, float b, float a) override;
 
+  void blit_framebuffer(int32_t srcx0,
+                        int32_t srcy0,
+                        int32_t srcx1,
+                        int32_t srcy1,
+                        int32_t dstx0,
+                        int32_t dsty0,
+                        int32_t dstx1,
+                        int32_t dsty1) override;
+
   std::shared_ptr<VertexArray> create_vertex_array() override;
 
   std::shared_ptr<IndexBuffer>
@@ -33,6 +42,15 @@ public:
   create_shader(const std::string &             vertex_shader_filename,
                 const std::string &             fragment_shader_filename,
                 const std::vector<std::string> &shader_defines) override;
+
+  std::shared_ptr<Texture2D>
+  create_texture2d(const Texture2DConfig &config) override;
+
+  std::shared_ptr<Renderbuffer>
+  create_renderbuffer(const RenderbufferConfig &config) override;
+
+  std::shared_ptr<Framebuffer>
+  create_framebuffer_rrt(const FramebufferConfigRRT &config) override;
 
   void register_renderable(std::shared_ptr<RenderInfo> render_info) override;
 

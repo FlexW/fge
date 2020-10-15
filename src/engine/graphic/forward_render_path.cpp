@@ -5,7 +5,9 @@ namespace Fge
 {
 
 void ForwardRenderPath::render(const glm::mat4 &projection_mat,
-                               const Camera &   camera)
+                               const Camera &   camera,
+                               uint32_t         width,
+                               uint32_t         height)
 {
   auto app             = Application::get_instance();
   auto graphic_manager = app->get_graphic_manager();
@@ -13,6 +15,7 @@ void ForwardRenderPath::render(const glm::mat4 &projection_mat,
 
   renderer->clear_color();
   renderer->clear_depth();
+  renderer->set_viewport(0, 0, width, height);
 
   const auto &renderables = renderer->get_renderables();
 

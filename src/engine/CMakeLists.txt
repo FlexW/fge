@@ -31,6 +31,7 @@ target_link_libraries(
   imgui
   assimp
   glm
+  stb
   )
 
 target_compile_features(engine PUBLIC cxx_std_17)

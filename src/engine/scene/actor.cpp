@@ -16,10 +16,14 @@ Actor::~Actor() { clear(); }
 
 void Actor::on_create()
 {
+  compute_world_transform();
+
   for (auto component : components)
   {
     component->on_create();
   }
+
+  compute_world_transform();
 }
 
 void Actor::on_fixed_update(float frametime)

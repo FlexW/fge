@@ -29,3 +29,6 @@ add_subdirectory(assimp)
 
 # GLM
 add_subdirectory(glm)
+
+# STB
+add_subdirectory(stb)

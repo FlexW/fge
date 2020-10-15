@@ -1,6 +1,9 @@
 #pragma once
 
+#include "graphic/framebuffer.hpp"
 #include "graphic/render_info.hpp"
+#include "graphic/renderbuffer.hpp"
+#include "graphic/texture.hpp"
 #include "index_buffer.hpp"
 #include "std.hpp"
 #include "vertex_array.hpp"
@@ -25,6 +28,15 @@ public:
 
   virtual void set_clear_color(float r, float g, float b, float a) = 0;
 
+  virtual void blit_framebuffer(int32_t srcx0,
+                                int32_t srcy0,
+                                int32_t srcx1,
+                                int32_t srcy1,
+                                int32_t dstx0,
+                                int32_t dsty0,
+                                int32_t dstx1,
+                                int32_t dsty1) = 0;
+
   virtual std::shared_ptr<VertexArray> create_vertex_array() = 0;
 
   virtual std::shared_ptr<IndexBuffer>
@@ -37,6 +49,15 @@ public:
   create_shader(const std::string &             vertex_shader_filename,
                 const std::string &             fragment_shader_filename,
                 const std::vector<std::string> &shader_defines) = 0;
+
+  virtual std::shared_ptr<Texture2D>
+  create_texture2d(const Texture2DConfig &config) = 0;
+
+  virtual std::shared_ptr<Renderbuffer>
+  create_renderbuffer(const RenderbufferConfig &config) = 0;
+
+  virtual std::shared_ptr<Framebuffer>
+  create_framebuffer_rrt(const FramebufferConfigRRT &config) = 0;
 
   virtual void register_renderable(std::shared_ptr<RenderInfo> render_info) = 0;
 

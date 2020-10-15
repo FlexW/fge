@@ -8,6 +8,7 @@ std::mutex               log_mutex;
 std::vector<LogInfo>     log_queue;
 std::mutex               sink_mutex;
 std::unique_ptr<LogSink> sink;
+LogMode                  logging_mode;
 
 bool    stop_logging = false;
 LogType log_level    = LogType::Debug;

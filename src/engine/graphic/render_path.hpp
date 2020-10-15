@@ -12,7 +12,9 @@ public:
   virtual ~RenderPath() = default;
 
   virtual void render(const glm::mat4 &projection_mat,
-                      const Camera &   camera) = 0;
+                      const Camera &   camera,
+                      uint32_t         width,
+                      uint32_t         height) = 0;
 };
 
 } // namespace Fge

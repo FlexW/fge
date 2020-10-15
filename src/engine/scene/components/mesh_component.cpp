@@ -36,6 +36,12 @@ void MeshComponent::create()
   component_created = true;
   create_render_infos();
   register_render_infos();
+
+  const auto &world_mat = owner->get_world_transform();
+  for (auto sub_mesh : mesh->get_sub_meshes())
+  {
+    sub_mesh->get_material()->set_uniform("world_mat", world_mat);
+  }
 }
 
 void MeshComponent::update(float /*delta_time*/)

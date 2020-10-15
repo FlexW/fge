@@ -18,6 +18,12 @@ enum class LogType
   Debug   = 4
 };
 
+enum class LogMode
+{
+  Sync,
+  Async
+};
+
 struct LogInfo
 {
   std::chrono::time_point<std::chrono::system_clock> time_point;
@@ -37,6 +43,8 @@ extern std::mutex               sink_mutex;
 extern LogType log_level;
 
 extern bool stop_logging;
+
+extern LogMode logging_mode;
 
 void termination_handler(int signum);
 
@@ -97,6 +105,7 @@ void set_log_level(LogType type);
 
 template <class TLogSink>
 void start_logger(LogType     log_level,
+                  LogMode     log_mode,
                   std::size_t reserve_count                 = 2000,
                   bool        handle_unexpected_termination = false)
 {
@@ -117,10 +126,29 @@ void start_logger(LogType     log_level,
   set_log_level(log_level);
   set_sink<TLogSink>();
 
-  log_queue.reserve(reserve_count);
-  log_thread = std::thread(watch_log_queue);
+  if (log_mode == LogMode::Async)
+  {
+    log_queue.reserve(reserve_count);
+    log_thread = std::thread(watch_log_queue);
+  }
 
-  trace("Log", "Start logging system");
+  logging_mode = log_mode;
+
+  std::string log_mode_str;
+  if (log_mode == LogMode::Async)
+  {
+    log_mode_str = "async";
+  }
+  else if (log_mode == LogMode::Sync)
+  {
+    log_mode_str = "sync";
+  }
+  else
+  {
+    log_mode_str = "unknown";
+  }
+
+  trace("Log", "Start logging system in {} mode", log_mode_str);
 
 #endif
 }
@@ -141,15 +169,29 @@ static void msg(LogType            type,
   const auto time_point = std::chrono::system_clock::now();
   auto       log_msg = fmt::format(format_string, std::forward<Targs>(args)...);
 
-  log_mutex.lock();
-  auto &info = log_queue.emplace_back();
+  if (logging_mode == LogMode::Sync)
+  {
+    LogInfo log_info;
+    log_info.time_point = time_point;
+    log_info.type       = type;
+    log_info.thread_id  = std::this_thread::get_id();
+    log_info.msg        = log_msg;
+    log_info.tag        = tag;
 
-  info.time_point = time_point;
-  info.type       = type;
-  info.thread_id  = std::this_thread::get_id();
-  info.msg        = log_msg;
-  info.tag        = tag;
-  log_mutex.unlock();
+    sink->process_log_info(log_info);
+  }
+  else
+  {
+    log_mutex.lock();
+    auto &info = log_queue.emplace_back();
+
+    info.time_point = time_point;
+    info.type       = type;
+    info.thread_id  = std::this_thread::get_id();
+    info.msg        = log_msg;
+    info.tag        = tag;
+    log_mutex.unlock();
+  }
 
 #endif
 }

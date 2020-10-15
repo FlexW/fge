@@ -10,6 +10,7 @@ VertexBufferPNTBT::VertexBufferPNTBT(const std::vector<VertexPNTBT> &vertices)
       count(vertices.size())
 {
   glGenBuffers(1, &id);
+  trace("VertexBuffer", "Created vertex buffer with id: {}", id);
   glBindBuffer(GL_ARRAY_BUFFER, id);
 
   glBufferData(GL_ARRAY_BUFFER,
