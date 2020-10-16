@@ -14,6 +14,9 @@ layout (location = 0) out vec4 out_color;
 struct PointLight
 {
   vec3 position;
+  vec3 ambient_color;
+  vec3 diffuse_color;
+  vec3 specular_color;
 };
 
 #ifdef DIFFUSE_TEX
@@ -36,6 +39,7 @@ void main()
   diffuse_color = in_diffuse_color;
   #endif // DIFFUSE_TEX
 
+  vec3 ambient_color = diffuse_color;
   vec3 specular_color = diffuse_color;
 
   vec3 N = normalize(fs_in.normal);
@@ -49,10 +53,11 @@ void main()
     vec3 H = normalize(L + V);
 
     // Compute lightning
-    vec3 diffuse = max(dot(N, L), 0.0) * diffuse_color;
-    vec3 specular = pow(max(dot(N, H), 0.0), specular_power) * specular_color;
+    vec3 ambient = ambient_color * point_lights[i].ambient_color;
+    vec3 diffuse = max(dot(N, L), 0.0) * diffuse_color * point_lights[i].diffuse_color;
+    vec3 specular = pow(max(dot(N, H), 0.0), specular_power) * specular_color * point_lights[i].specular_color;
 
-    color += diffuse + specular;
+    color += ambient + diffuse + specular;
   }
 
   out_color = vec4(color, 1.0);

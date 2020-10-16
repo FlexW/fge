@@ -32,6 +32,8 @@ public:
          const std::string &             fragmentShaderProgram,
          const std::vector<const char *> output_names);
 
+  ~Shader();
+
   uint32_t get_id() const override { return id; }
 
   /**
@@ -222,6 +224,10 @@ private:
     VERTEX,
     GEOMETRY
   };
+
+  Shader(const Shader &other) = delete;
+
+  void operator=(const Shader &other) = delete;
 
   std::string shader_type_to_string(ShaderType shader_type) const;
 

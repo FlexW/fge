@@ -37,7 +37,7 @@ void GraphicManager::flush() { window->flush(); }
 
 void GraphicManager::terminate()
 {
-
+  renderer->terminate();
   terminate_imgui();
   window->terminate();
 }

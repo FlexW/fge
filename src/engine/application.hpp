@@ -48,6 +48,8 @@ public:
 
   void close();
 
+  float get_delta_time() const { return delta_time; }
+
 private:
   static std::once_flag               instance_created;
   static std::shared_ptr<Application> instance;
@@ -62,6 +64,8 @@ private:
   std::shared_ptr<SceneManager>    scene_manager{};
 
   bool close_app = false;
+
+  float delta_time = 0.0f;
 
   Application();
 

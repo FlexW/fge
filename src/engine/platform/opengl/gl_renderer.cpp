@@ -327,4 +327,39 @@ const std::vector<std::shared_ptr<SpotLight>> &Renderer::get_spot_lights() const
   return spot_lights;
 }
 
+void Renderer::terminate()
+{
+  if (point_lights.size() > 0)
+  {
+    trace("Renderer",
+          "Terminate cleared {} forgotten point lights",
+          point_lights.size());
+  }
+  point_lights.clear();
+
+  if (spot_lights.size() > 0)
+  {
+    trace("Renderer",
+          "Terminate cleared {} forgotten spot lights",
+          spot_lights.size());
+  }
+  spot_lights.clear();
+
+  if (directional_lights.size() > 0)
+  {
+    trace("Renderer",
+          "Terminate cleared {} forgotten directional lights",
+          directional_lights.size());
+  }
+  directional_lights.clear();
+
+  if (renderables.size() > 0)
+  {
+    trace("Renderer",
+          "Terminate cleared {} forgotten renderables",
+          renderables.size());
+  }
+  renderables.clear();
+}
+
 } // namespace Fge::Gl

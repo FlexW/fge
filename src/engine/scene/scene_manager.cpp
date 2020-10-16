@@ -51,4 +51,6 @@ void SceneManager::set_scene(std::shared_ptr<Scene> scene)
   scene->on_create();
 }
 
+void SceneManager::terminate() { scene = nullptr; }
+
 } // namespace Fge

@@ -100,6 +100,8 @@ public:
   const std::vector<std::shared_ptr<SpotLight>> &
   get_spot_lights() const override;
 
+  void terminate() override;
+
 private:
   std::vector<std::shared_ptr<RenderInfo>> renderables;
 

@@ -14,6 +14,7 @@ Shader::Shader(const std::string &             vertex_shader_program,
       compile_shader(fragment_shader_program, GL_FRAGMENT_SHADER);
 
   id = glCreateProgram();
+  trace("Shader", "Created shader with id: {}", id);
   glAttachShader(id, vertex_shader_id);
   glAttachShader(id, fragment_shader_id);
 
@@ -48,6 +49,7 @@ Shader::Shader(const std::string &vertexShaderProgram,
   check_for_compile_errors("", fragmentShaderId, ShaderType::FRAGMENT);
 
   id = glCreateProgram();
+  trace("Shader", "Created shader with id: {}", id);
   glAttachShader(id, vertexShaderId);
   glAttachShader(id, fragmentShaderId);
 
@@ -66,6 +68,12 @@ Shader::Shader(const std::string &vertexShaderProgram,
 
   glDeleteShader(vertexShaderId);
   glDeleteShader(fragmentShaderId);
+}
+
+Shader::~Shader()
+{
+  trace("Shader", "Delete shader with id: {}", id);
+  glDeleteProgram(id);
 }
 
 GLuint Shader::compile_shader(const std::string &program, GLenum type)

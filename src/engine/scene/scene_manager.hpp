@@ -22,6 +22,8 @@ public:
 
   void set_scene(std::shared_ptr<Scene> scene);
 
+  void terminate();
+
 private:
   std::shared_ptr<Scene> scene{};
 };

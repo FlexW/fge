@@ -76,9 +76,10 @@ void DefaultMaterial::regenerate_shader()
   auto app      = Application::get_instance();
   auto renderer = app->get_graphic_manager()->get_renderer();
 
-  shader = renderer->create_shader("blinn_phong.vert",
+  shader         = renderer->create_shader("blinn_phong.vert",
                                    "blinn_phong.frag",
                                    shader_defines);
+  shader_changed = false;
 }
 
 std::shared_ptr<Material> DefaultMaterial::clone()

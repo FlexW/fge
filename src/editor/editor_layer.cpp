@@ -1,5 +1,6 @@
 #include "editor_layer.hpp"
 #include "application.hpp"
+#include "glm/ext/vector_float3.hpp"
 #include "graphic/camera.hpp"
 #include "graphic/imgui.hpp"
 #include "graphic/render_info.hpp"
@@ -54,7 +55,7 @@ void EditorLayer::init()
 
   actor = scene->add_actor<Actor>();
   actor->set_position(glm::vec3(0.0f, 10.0f, 0.0f));
-  actor->add_component<PointLightComponent>();
+  auto point_light_comp = actor->add_component<PointLightComponent>();
 
   auto scene_manager = app->get_scene_manager();
   scene_manager->set_scene(scene);
@@ -107,21 +108,24 @@ bool EditorLayer::on_key_event(const KeyEvent *const event)
 
   if (move_camera)
   {
+    auto app        = Application::get_instance();
+    auto delta_time = app->get_delta_time();
+
     if (event->key == Key::W)
     {
-      editor_camera.process_movement(CameraMovement::Forward, 1.0f);
+      editor_camera.process_movement(CameraMovement::Forward, delta_time);
     }
     else if (event->key == Key::S)
     {
-      editor_camera.process_movement(CameraMovement::Backward, 1.0f);
+      editor_camera.process_movement(CameraMovement::Backward, delta_time);
     }
     else if (event->key == Key::A)
     {
-      editor_camera.process_movement(CameraMovement::Left, 1.0f);
+      editor_camera.process_movement(CameraMovement::Left, delta_time);
     }
     else if (event->key == Key::D)
     {
-      editor_camera.process_movement(CameraMovement::Right, 1.0f);
+      editor_camera.process_movement(CameraMovement::Right, delta_time);
     }
   }
 

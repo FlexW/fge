@@ -2,6 +2,7 @@
 
 #include "application.hpp"
 #include "forward_render_path.hpp"
+#include "glm/gtx/string_cast.hpp"
 #include "graphic/material.hpp"
 #include "graphic/point_light.hpp"
 #include "log/log.hpp"
@@ -24,6 +25,15 @@ void ForwardRenderPath::set_lightning_uniforms(
     material.set_uniform(
         fmt::format("point_lights[{}].position", static_cast<int32_t>(i)),
         point_lights[i]->position);
+    material.set_uniform(
+        fmt::format("point_lights[{}].ambient_color", static_cast<int32_t>(i)),
+        point_lights[i]->ambient_color);
+    material.set_uniform(
+        fmt::format("point_lights[{}].diffuse_color", static_cast<int32_t>(i)),
+        point_lights[i]->diffuse_color);
+    material.set_uniform(
+        fmt::format("point_lights[{}].specular_color", static_cast<int32_t>(i)),
+        point_lights[i]->specular_color);
 
     ++point_light_count;
   }

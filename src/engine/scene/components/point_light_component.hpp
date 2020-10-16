@@ -16,6 +16,12 @@ public:
 
   ~PointLightComponent();
 
+  void set_ambient_color(const glm::vec3 &ambient_color);
+
+  void set_diffuse_color(const glm::vec3 &diffuse_color);
+
+  void set_specular_color(const glm::vec3 &specular_color);
+
 protected:
   void create() override;
 

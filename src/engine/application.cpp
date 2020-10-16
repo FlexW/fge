@@ -1,7 +1,10 @@
 #include "application.hpp"
+#include "GLFW/glfw3.h"
 #include "log/io_log_sink.hpp"
 #include "log/log.hpp"
 #include "scene/scene_manager.hpp"
+#include "util/time.hpp"
+#include <chrono>
 
 namespace Fge
 {
@@ -104,6 +107,7 @@ bool Application::on_close(const WindowCloseEvent *const /*event*/)
 
 void Application::terminate_application()
 {
+  scene_manager->terminate();
   graphic_manager->terminate();
   terminate_logger();
 }
@@ -130,11 +134,15 @@ int Application::run()
 
 void Application::main_loop()
 {
+  double last_time = get_current_time_millis() / 1000.0;
+
   while (!close_app)
   {
+    double current_time = double(get_current_time_millis()) / 1000.0;
+    delta_time          = static_cast<float>(current_time - last_time);
 
-    scene_manager->on_update(1.0f);
-    layer_stack.on_update(1.0f);
+    scene_manager->on_update(delta_time);
+    layer_stack.on_update(delta_time);
 
     graphic_manager->begin_render();
 
@@ -147,6 +155,8 @@ void Application::main_loop()
     graphic_manager->end_render();
 
     graphic_manager->flush();
+
+    last_time = current_time;
   }
 
   terminate_application();
