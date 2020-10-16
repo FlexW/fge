@@ -61,6 +61,8 @@ std::shared_ptr<DefaultMaterial> load_material(const aiScene *ai_scene,
     material->set_specular_texture(specular_tex);
   }
 
+  material->set_specular_power(200.0f);
+
   return material;
 }
 

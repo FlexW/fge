@@ -27,6 +27,8 @@ public:
 
   void set_specular_texture(std::shared_ptr<Texture2D> tex);
 
+  void set_specular_power(float specular_power);
+
   std::shared_ptr<Material> clone() override;
 
 private:

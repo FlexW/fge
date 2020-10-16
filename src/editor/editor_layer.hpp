@@ -1,6 +1,8 @@
 #pragma once
 
 #include "graphic/camera.hpp"
+#include "graphic/grid.hpp"
+#include "graphic/render_info.hpp"
 #include "graphic/render_view.hpp"
 #include "graphic/window.hpp"
 #include "imgui_views/dockspace.hpp"
@@ -42,6 +44,19 @@ private:
   // ImGui Views
   EditorViews::DockSpace     dockspace;
   EditorViews::SceneViewport scene_viewport;
+
+  std::unique_ptr<Grid>       grid{};
+  bool                        grid_registered = false;
+  bool                        show_grid       = true;
+  std::shared_ptr<RenderInfo> grid_render_info{};
+
+  void create_grid(int32_t size);
+
+  void handle_grid_registration();
+
+  void unregister_grid();
+
+  void register_grid();
 };
 
 } // namespace Fge

@@ -1,5 +1,7 @@
 #pragma once
 
+#include "graphic/material.hpp"
+#include "graphic/point_light.hpp"
 #include "render_path.hpp"
 
 namespace Fge
@@ -12,6 +14,11 @@ public:
               const Camera &   camera,
               uint32_t         width,
               uint32_t         height) override;
+
+private:
+  void set_lightning_uniforms(
+      Material &                                      material,
+      const std::vector<std::shared_ptr<PointLight>> &point_lights);
 };
 
 } // namespace Fge

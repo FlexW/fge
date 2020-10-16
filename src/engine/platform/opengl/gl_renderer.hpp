@@ -1,5 +1,6 @@
 #pragma once
 
+#include "graphic/point_light.hpp"
 #include "graphic/render_info.hpp"
 #include "graphic/renderer.hpp"
 
@@ -38,6 +39,9 @@ public:
   std::shared_ptr<VertexBufferPNTBT>
   create_vertex_buffer_pntbt(const std::vector<VertexPNTBT> &vertices) override;
 
+  std::shared_ptr<VertexBufferP>
+  create_vertex_buffer_p(const std::vector<VertexP> &vertices) override;
+
   std::shared_ptr<Shader>
   create_shader(const std::string &             vertex_shader_filename,
                 const std::string &             fragment_shader_filename,
@@ -61,15 +65,47 @@ public:
 
   void draw(const VertexArray &vertex_array,
             const IndexBuffer &index_buffer,
-            Material &         material) override;
+            Material &         material,
+            DrawMode           draw_mode) override;
+
+  void draw(const VertexArray &vertex_array,
+            Material &         material,
+            DrawMode           draw_mode) override;
 
   void set_viewport(uint32_t x,
                     uint32_t y,
                     uint32_t width,
                     uint32_t height) override;
 
+  void register_point_light(std::shared_ptr<PointLight> point_light) override;
+
+  void register_directional_light(
+      std::shared_ptr<DirectionalLight> directional_light) override;
+
+  void register_spot_light(std::shared_ptr<SpotLight> spot_light) override;
+
+  void unregister_point_light(std::shared_ptr<PointLight> point_light) override;
+
+  void unregister_directional_light(
+      std::shared_ptr<DirectionalLight> directional_light) override;
+
+  void unregister_spot_light(std::shared_ptr<SpotLight> spot_light) override;
+
+  const std::vector<std::shared_ptr<PointLight>> &
+  get_point_lights() const override;
+
+  const std::vector<std::shared_ptr<DirectionalLight>> &
+  get_directional_lights() const override;
+
+  const std::vector<std::shared_ptr<SpotLight>> &
+  get_spot_lights() const override;
+
 private:
   std::vector<std::shared_ptr<RenderInfo>> renderables;
+
+  std::vector<std::shared_ptr<PointLight>>       point_lights;
+  std::vector<std::shared_ptr<SpotLight>>        spot_lights;
+  std::vector<std::shared_ptr<DirectionalLight>> directional_lights;
 };
 
 } // namespace Fge::Gl

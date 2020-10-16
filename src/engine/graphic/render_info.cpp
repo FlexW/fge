@@ -12,4 +12,11 @@ RenderInfo::RenderInfo(std::shared_ptr<VertexArray> vertex_array,
 {
 }
 
+RenderInfo::RenderInfo(std::shared_ptr<VertexArray> vertex_array,
+                       std::shared_ptr<Material>    material)
+    : vertex_array(vertex_array),
+      material(material)
+{
+}
+
 } // namespace Fge

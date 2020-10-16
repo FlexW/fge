@@ -113,4 +113,9 @@ bool DefaultMaterial::shader_defines_contains(const std::string &define)
   return false;
 }
 
+void DefaultMaterial::set_specular_power(float specular_power)
+{
+  set_uniform("specular_power", specular_power);
+}
+
 } // namespace Fge

@@ -133,6 +133,9 @@ void Application::main_loop()
   while (!close_app)
   {
 
+    scene_manager->on_update(1.0f);
+    layer_stack.on_update(1.0f);
+
     graphic_manager->begin_render();
 
     layer_stack.on_render();

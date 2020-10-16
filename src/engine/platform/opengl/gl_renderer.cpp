@@ -2,6 +2,7 @@
 #include "application.hpp"
 #include "framebuffer.hpp"
 #include "gl.hpp"
+#include "graphic/render_info.hpp"
 #include "graphic/renderbuffer.hpp"
 #include "graphic/shader_preprocessor.hpp"
 #include "graphic/texture.hpp"
@@ -11,11 +12,27 @@
 #include "shader.hpp"
 #include "std.hpp"
 #include "texture2d.hpp"
+#include "util/assert.hpp"
 #include "vertex_array.hpp"
 #include "vertex_buffer.hpp"
 
 namespace Fge::Gl
 {
+
+GLenum draw_mode_to_gl_draw_mode(DrawMode draw_mode)
+{
+  switch (draw_mode)
+  {
+  case DrawMode::LINES:
+    return GL_LINES;
+
+  case DrawMode::TRIANGLES:
+    return GL_TRIANGLES;
+
+  default:
+    FGE_FAIL("No such draw mode");
+  }
+}
 
 Renderer::Renderer() { glEnable(GL_DEPTH_TEST); }
 
@@ -68,6 +85,12 @@ std::shared_ptr<Fge::VertexBufferPNTBT>
 Renderer::create_vertex_buffer_pntbt(const std::vector<VertexPNTBT> &vertices)
 {
   return std::make_shared<Gl::VertexBufferPNTBT>(vertices);
+}
+
+std::shared_ptr<Fge::VertexBufferP>
+Renderer::create_vertex_buffer_p(const std::vector<VertexP> &vertices)
+{
+  return std::make_shared<Gl::VertexBufferP>(vertices);
 }
 
 std::shared_ptr<Fge::Texture2D>
@@ -126,18 +149,34 @@ Renderer::get_renderables() const
 
 void Renderer::draw(const Fge::VertexArray &vertex_array,
                     const Fge::IndexBuffer &index_buffer,
-                    Material &              material)
+                    Material &              material,
+                    DrawMode                draw_mode)
 {
   material.bind();
   vertex_array.bind();
 
-  glDrawElements(GL_TRIANGLES,
+  glDrawElements(draw_mode_to_gl_draw_mode(draw_mode),
                  index_buffer.get_count(),
                  GL_UNSIGNED_INT,
                  nullptr);
 
   vertex_array.unbind();
   material.unbind();
+}
+
+void Renderer::draw(const Fge::VertexArray &vertex_array,
+                    Material &              material,
+                    DrawMode                draw_mode)
+{
+  vertex_array.bind();
+  material.bind();
+
+  glDrawArrays(draw_mode_to_gl_draw_mode(draw_mode),
+               0,
+               vertex_array.get_count());
+
+  material.unbind();
+  vertex_array.unbind();
 }
 
 void Renderer::set_viewport(uint32_t x,
@@ -177,6 +216,115 @@ Renderer::create_shader(const std::string &vertex_shader_filename,
       fragment_shader_code);
 
   return std::make_shared<Gl::Shader>(vertex_shader_code, fragment_shader_code);
+}
+
+void Renderer::register_point_light(std::shared_ptr<PointLight> point_light)
+{
+  trace("Renderer", "Try to register point light");
+
+  for (auto l : point_lights)
+  {
+    if (l == point_light)
+    {
+      return;
+    }
+  }
+
+  trace("Renderer", "Register point light");
+  point_lights.push_back(point_light);
+}
+
+void Renderer::register_directional_light(
+    std::shared_ptr<DirectionalLight> directional_light)
+{
+  trace("Renderer", "Try to register directional light");
+
+  for (auto l : directional_lights)
+  {
+    if (l == directional_light)
+    {
+      return;
+    }
+  }
+
+  trace("Renderer", "Register directional light");
+  directional_lights.push_back(directional_light);
+}
+
+void Renderer::register_spot_light(std::shared_ptr<SpotLight> spot_light)
+{
+  trace("Renderer", "Try to register spot light");
+
+  for (auto l : spot_lights)
+  {
+    if (l == spot_light)
+    {
+      return;
+    }
+  }
+
+  trace("Renderer", "Register spot light");
+  spot_lights.push_back(spot_light);
+}
+
+void Renderer::unregister_point_light(std::shared_ptr<PointLight> point_light)
+{
+  trace("Renderer", "Try to unregister point light");
+
+  for (size_t i = 0; i < point_lights.size(); ++i)
+  {
+    if (point_lights[i] == point_light)
+    {
+      trace("Renderer", "Unregister point light");
+      point_lights.erase(point_lights.begin() + i);
+    }
+  }
+}
+
+void Renderer::unregister_directional_light(
+    std::shared_ptr<DirectionalLight> directional_light)
+{
+  trace("Renderer", "Try to unregister directional light");
+
+  for (size_t i = 0; i < directional_lights.size(); ++i)
+  {
+    if (directional_lights[i] == directional_light)
+    {
+      trace("Renderer", "Unregister directional light");
+      directional_lights.erase(directional_lights.begin() + i);
+    }
+  }
+}
+
+void Renderer::unregister_spot_light(std::shared_ptr<SpotLight> spot_light)
+{
+  trace("Renderer", "Try to unregister spot light");
+
+  for (size_t i = 0; i < spot_lights.size(); ++i)
+  {
+    if (spot_lights[i] == spot_light)
+    {
+      trace("Renderer", "Unregister spot light");
+      spot_lights.erase(spot_lights.begin() + i);
+    }
+  }
+}
+
+const std::vector<std::shared_ptr<PointLight>> &
+Renderer::get_point_lights() const
+{
+  return point_lights;
+}
+
+const std::vector<std::shared_ptr<DirectionalLight>> &
+Renderer::get_directional_lights() const
+{
+  return directional_lights;
+}
+
+const std::vector<std::shared_ptr<SpotLight>> &Renderer::get_spot_lights() const
+{
+  return spot_lights;
 }
 
 } // namespace Fge::Gl

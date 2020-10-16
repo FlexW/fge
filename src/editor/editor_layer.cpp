@@ -2,11 +2,16 @@
 #include "application.hpp"
 #include "graphic/camera.hpp"
 #include "graphic/imgui.hpp"
+#include "graphic/render_info.hpp"
 #include "graphic/window.hpp"
 #include "imgui_views/dockspace.hpp"
+#include "log/log.hpp"
 #include "scene/actor.hpp"
 #include "scene/components/components.hpp"
+#include "scene/components/point_light_component.hpp"
 #include "scene/scene.hpp"
+#include "util/assert.hpp"
+#include <memory>
 
 namespace Fge
 {
@@ -33,6 +38,8 @@ void EditorLayer::init()
   event_manager->subscribe(this, &EditorLayer::on_key_event, 0);
   event_manager->subscribe(this, &EditorLayer::on_mouse_event, 0);
 
+  create_grid(50);
+
   // ----------------------------- BEGIN TEST SCENE ---------------------------
 
   auto scene     = std::make_shared<Scene>();
@@ -45,13 +52,17 @@ void EditorLayer::init()
   mesh_comp = actor->add_component<MeshComponent>();
   mesh_comp->set_mesh_from_file("bunny.obj");
 
+  actor = scene->add_actor<Actor>();
+  actor->set_position(glm::vec3(0.0f, 10.0f, 0.0f));
+  actor->add_component<PointLightComponent>();
+
   auto scene_manager = app->get_scene_manager();
   scene_manager->set_scene(scene);
 
   // ----------------------------- END TEST SCENE ---------------------------
 }
 
-void EditorLayer::update(float /*delta_time*/) {}
+void EditorLayer::update(float /*delta_time*/) { handle_grid_registration(); }
 
 void EditorLayer::fixed_update(float /*frametime*/) {}
 
@@ -62,8 +73,8 @@ void EditorLayer::imgui_render()
   dockspace.draw();
   scene_viewport.draw(editor_camera);
 
-  bool show = true;
-  ImGui::ShowDemoWindow(&show);
+  // bool show = true;
+  // ImGui::ShowDemoWindow(&show);
 }
 
 bool EditorLayer::on_window_resize_event(const WindowResizeEvent *const event)
@@ -126,6 +137,61 @@ bool EditorLayer::on_mouse_event(const MouseEvent *const event)
   }
 
   return false;
+}
+
+void EditorLayer::handle_grid_registration()
+{
+  if (show_grid)
+  {
+    register_grid();
+  }
+  else
+  {
+    unregister_grid();
+  }
+}
+
+void EditorLayer::create_grid(int32_t size)
+{
+  FGE_ASSERT(size > 1);
+
+  if (size % 2 == 1)
+  {
+    --size;
+  }
+
+  unregister_grid();
+
+  grid             = std::make_unique<Grid>(size);
+  grid_render_info = grid->create_render_info();
+}
+
+void EditorLayer::unregister_grid()
+{
+  if (grid_registered)
+  {
+    trace("EditorLayer", "Unregister grid");
+
+    auto app      = Application::get_instance();
+    auto renderer = app->get_graphic_manager()->get_renderer();
+
+    renderer->unregister_renderable(grid_render_info);
+    grid_registered = false;
+  }
+}
+
+void EditorLayer::register_grid()
+{
+  if (!grid_registered)
+  {
+    trace("EditorLayer", "Register grid");
+
+    auto app      = Application::get_instance();
+    auto renderer = app->get_graphic_manager()->get_renderer();
+
+    renderer->register_renderable(grid_render_info);
+    grid_registered = true;
+  }
 }
 
 } // namespace Fge
