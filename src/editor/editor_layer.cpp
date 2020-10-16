@@ -53,9 +53,12 @@ void EditorLayer::init()
   mesh_comp = actor->add_component<MeshComponent>();
   mesh_comp->set_mesh_from_file("bunny.obj");
 
-  actor = scene->add_actor<Actor>();
-  actor->set_position(glm::vec3(0.0f, 10.0f, 0.0f));
-  auto point_light_comp = actor->add_component<PointLightComponent>();
+  // actor = scene->add_actor<Actor>();
+  // actor->set_position(glm::vec3(0.0f, 10.0f, 0.0f));
+  // auto point_light_comp = actor->add_component<PointLightComponent>();
+
+  actor               = scene->add_actor<Actor>();
+  auto dir_light_comp = actor->add_component<DirectionalLightComponent>();
 
   auto scene_manager = app->get_scene_manager();
   scene_manager->set_scene(scene);

@@ -3,6 +3,7 @@
 #include "application.hpp"
 #include "forward_render_path.hpp"
 #include "glm/gtx/string_cast.hpp"
+#include "graphic/directional_light.hpp"
 #include "graphic/material.hpp"
 #include "graphic/point_light.hpp"
 #include "log/log.hpp"
@@ -41,6 +42,31 @@ void ForwardRenderPath::set_lightning_uniforms(
   material.set_uniform("point_light_count", point_light_count);
 }
 
+void ForwardRenderPath::set_lightning_uniforms(
+    Material &                                            material,
+    const std::vector<std::shared_ptr<DirectionalLight>> &directional_lights)
+{
+  if (directional_lights.size() == 0)
+  {
+    material.set_uniform("directional_light_enabled", false);
+    return;
+  }
+
+  material.set_uniform("directional_light.direction",
+                       directional_lights[0]->direction);
+
+  material.set_uniform("directional_light.ambient_color",
+                       directional_lights[0]->ambient_color);
+
+  material.set_uniform("directional_light.diffuse_color",
+                       directional_lights[0]->diffuse_color);
+
+  material.set_uniform("directional_light.specular_color",
+                       directional_lights[0]->specular_color);
+
+  material.set_uniform("directional_light_enabled", true);
+}
+
 void ForwardRenderPath::render(const glm::mat4 &projection_mat,
                                const Camera &   camera,
                                uint32_t         width,
@@ -54,8 +80,9 @@ void ForwardRenderPath::render(const glm::mat4 &projection_mat,
   renderer->clear_depth();
   renderer->set_viewport(0, 0, width, height);
 
-  const auto &renderables  = renderer->get_renderables();
-  const auto &point_lights = renderer->get_point_lights();
+  const auto &renderables        = renderer->get_renderables();
+  const auto &point_lights       = renderer->get_point_lights();
+  const auto &directional_lights = renderer->get_directional_lights();
 
   const auto view_mat = camera.get_view_matrix();
   for (auto renderable : renderables)
@@ -64,6 +91,7 @@ void ForwardRenderPath::render(const glm::mat4 &projection_mat,
     material->set_uniform("projection_mat", projection_mat);
     material->set_uniform("view_mat", view_mat);
     set_lightning_uniforms(*material, point_lights);
+    set_lightning_uniforms(*material, directional_lights);
 
     if (renderable->get_index_buffer())
     {
