@@ -59,6 +59,10 @@ private:
   void register_grid();
 
   void do_camera_movement(float delta_time);
+
+  bool save_scene(const EditorViews::SignalSaveScene *const signal);
+
+  bool load_scene(const EditorViews::SignalLoadScene *const signal);
 };
 
 } // namespace Fge

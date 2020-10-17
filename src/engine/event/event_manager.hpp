@@ -6,8 +6,6 @@
 namespace Fge
 {
 
-using HandlerList = std::vector<std::shared_ptr<HandlerFunctionBase>>;
-
 class EventManager
 {
 public:
@@ -38,7 +36,7 @@ public:
     }
   }
 
-  template <class T, class TEvent>
+  template <typename T, typename TEvent>
   void subscribe(T *instance,
                  bool (T::*member_function)(const TEvent *const),
                  int priority = 100)
@@ -48,11 +46,11 @@ public:
     // First time initialization
     if (handlers == nullptr)
     {
-      handlers                    = new HandlerList();
+      handlers                    = std::make_shared<HandlerList>();
       subscribers[typeid(TEvent)] = handlers;
     }
 
-    unsigned i = 0;
+    uint32_t i = 0;
     for (; i < handlers->size(); ++i)
     {
       if ((*handlers)[i]->get_priority() > priority)
@@ -77,7 +75,7 @@ public:
                                                            priority));
   }
 
-  template <class T, class TEvent>
+  template <typename T, typename TEvent>
   void unsubscribe(T *instance, bool (T::*member_function)(const TEvent *const))
   {
     auto handlers = subscribers[typeid(TEvent)];
@@ -87,9 +85,10 @@ public:
       return;
     }
 
-    for (unsigned i = 0; i < handlers->size(); ++i)
+    for (uint32_t i = 0; i < handlers->size(); ++i)
     {
-      auto handler = static_cast<MemberFunctionHandler<T, TEvent>>(handlers[i]);
+      auto handler =
+          static_cast<MemberFunctionHandler<T, TEvent>>((*handlers)[i]);
 
       if (handler->get_instance() == instance &&
           handler->get_member_function() == member_function)
@@ -103,7 +102,9 @@ public:
   // void clear();
 
 private:
-  std::unordered_map<std::type_index, HandlerList *> subscribers;
+  using HandlerList = std::vector<std::shared_ptr<HandlerFunctionBase>>;
+
+  std::unordered_map<std::type_index, std::shared_ptr<HandlerList>> subscribers;
 };
 
 } // namespace Fge

@@ -34,6 +34,9 @@ void EditorLayer::init()
   // Init imgui views
   scene_viewport.init();
 
+  dockspace.signal_save_scene.subscribe(this, &EditorLayer::save_scene);
+  dockspace.signal_load_scene.subscribe(this, &EditorLayer::load_scene);
+
   // Subscribe events
   event_manager->subscribe(this, &EditorLayer::on_window_resize_event, 0);
   event_manager->subscribe(this, &EditorLayer::on_key_event, 0);
@@ -211,6 +214,20 @@ void EditorLayer::register_grid()
     renderer->register_renderable(grid_render_info);
     grid_registered = true;
   }
+}
+
+bool EditorLayer::save_scene(
+    const EditorViews::SignalSaveScene *const /*signal*/)
+{
+  std::cout << "Save scene" << std::endl;
+  return false;
+}
+
+bool EditorLayer::load_scene(
+    const EditorViews::SignalLoadScene *const /*signal*/)
+{
+  std::cout << "Load scene" << std::endl;
+  return false;
 }
 
 } // namespace Fge

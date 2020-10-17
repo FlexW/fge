@@ -56,6 +56,22 @@ void DockSpace::draw()
       ImGui::EndMenu();
     }
 
+    if (ImGui::BeginMenu("Scene"))
+    {
+      if (ImGui::MenuItem("Save"))
+      {
+        SignalSaveScene signal;
+        signal_save_scene.publish(&signal);
+      }
+      if (ImGui::MenuItem("Load"))
+      {
+        SignalLoadScene signal;
+        signal_load_scene.publish(&signal);
+      }
+
+      ImGui::EndMenu();
+    }
+
     ImGui::EndMenuBar();
   }
 
