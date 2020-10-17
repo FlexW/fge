@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "graphic/point_light.hpp"
 #include "graphic/render_info.hpp"
@@ -31,29 +31,29 @@ public:
                         int32_t dstx1,
                         int32_t dsty1) override;
 
-  std::shared_ptr<VertexArray> create_vertex_array() override;
+  std::shared_ptr<Fge::VertexArray> create_vertex_array() override;
 
-  std::shared_ptr<IndexBuffer>
+  std::shared_ptr<Fge::IndexBuffer>
   create_index_buffer(const std::vector<uint32_t> &indices) override;
 
-  std::shared_ptr<VertexBufferPNTBT>
+  std::shared_ptr<Fge::VertexBufferPNTBT>
   create_vertex_buffer_pntbt(const std::vector<VertexPNTBT> &vertices) override;
 
-  std::shared_ptr<VertexBufferP>
+  std::shared_ptr<Fge::VertexBufferP>
   create_vertex_buffer_p(const std::vector<VertexP> &vertices) override;
 
-  std::shared_ptr<Shader>
+  std::shared_ptr<Fge::Shader>
   create_shader(const std::string &             vertex_shader_filename,
                 const std::string &             fragment_shader_filename,
                 const std::vector<std::string> &shader_defines) override;
 
-  std::shared_ptr<Texture2D>
+  std::shared_ptr<Fge::Texture2D>
   create_texture2d(const Texture2DConfig &config) override;
 
-  std::shared_ptr<Renderbuffer>
+  std::shared_ptr<Fge::Renderbuffer>
   create_renderbuffer(const RenderbufferConfig &config) override;
 
-  std::shared_ptr<Framebuffer>
+  std::shared_ptr<Fge::Framebuffer>
   create_framebuffer_rrt(const FramebufferConfigRRT &config) override;
 
   void register_renderable(std::shared_ptr<RenderInfo> render_info) override;
@@ -63,14 +63,14 @@ public:
   const std::vector<std::shared_ptr<RenderInfo>> &
   get_renderables() const override;
 
-  void draw(const VertexArray &vertex_array,
-            const IndexBuffer &index_buffer,
-            Material &         material,
-            DrawMode           draw_mode) override;
+  void draw(const Fge::VertexArray &vertex_array,
+            const Fge::IndexBuffer &index_buffer,
+            Material &              material,
+            DrawMode                draw_mode) override;
 
-  void draw(const VertexArray &vertex_array,
-            Material &         material,
-            DrawMode           draw_mode) override;
+  void draw(const Fge::VertexArray &vertex_array,
+            Material &              material,
+            DrawMode                draw_mode) override;
 
   void set_viewport(uint32_t x,
                     uint32_t y,

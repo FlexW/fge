@@ -26,34 +26,6 @@ void terminate_logger()
 
 void set_log_level(LogType type) { log_level = type; }
 
-std::string signal_to_string(int signum)
-{
-  switch (signum)
-  {
-  case SIGSEGV:
-    return "SIGSEGV";
-  case SIGTERM:
-    return "SIGTERM";
-  case SIGABRT:
-    return "SIGABRT";
-  case SIGINT:
-    return "SIGINT";
-  case SIGHUP:
-    return "SIGHUP";
-  case SIGFPE:
-    return "SIGFPE";
-  default:
-    FGE_FAIL("No such signal");
-  }
-}
-
-void termination_handler(int signum)
-{
-  info("", "Received signal " + signal_to_string(signum));
-  terminate_logger();
-  std::exit(1);
-}
-
 void watch_log_queue()
 {
   using namespace std::chrono_literals;

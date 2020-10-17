@@ -8,4 +8,5 @@ function update(delta_time)
    y = 0.0
 
    owner:set_position(vec3.new(x, y, z))
+   owner:set_rotation(vec3.new(x, 0.0, z))
 end

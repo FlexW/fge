@@ -1,12 +1,10 @@
-#include "application.hpp"
+﻿#include "application.hpp"
 #include "GLFW/glfw3.h"
+#include "file/root_directory.hpp"
 #include "log/io_log_sink.hpp"
 #include "log/log.hpp"
 #include "scene/scene_manager.hpp"
 #include "util/time.hpp"
-#include <cstdlib>
-#include <exception>
-#include <stdexcept>
 
 namespace Fge
 {
@@ -80,8 +78,7 @@ void Application::init_application(int /*argc*/, char ** /*argv*/)
     event_manager = std::make_shared<EventManager>();
 
     // Create file manager
-    const auto app_root_path = std::filesystem::current_path();
-    file_system_manager      = std::make_shared<FileManger>(app_root_path);
+    file_system_manager = std::make_shared<FileManger>(root_directory);
 
     // Create Config manager
     config_manager = std::make_shared<ConfigManager>();

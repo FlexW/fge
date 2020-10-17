@@ -1,4 +1,4 @@
-#include "gl_renderer.hpp"
+﻿#include "gl_renderer.hpp"
 #include "application.hpp"
 #include "framebuffer.hpp"
 #include "gl.hpp"
@@ -196,9 +196,9 @@ Renderer::create_shader(const std::string &vertex_shader_filename,
   auto file_manager = app->get_file_manager();
 
   auto vertex_shader_code = file_manager->read_text_file(
-      file_manager->get_shaders_path() / vertex_shader_filename);
+      (file_manager->get_shaders_path() / vertex_shader_filename).string());
   auto fragment_shader_code = file_manager->read_text_file(
-      file_manager->get_shaders_path() / fragment_shader_filename);
+      (file_manager->get_shaders_path() / fragment_shader_filename).string());
 
   ShaderPreprocessor shader_preprocessor(std::vector<std::string>{
       file_manager->get_shaders_path().string() + "/"});

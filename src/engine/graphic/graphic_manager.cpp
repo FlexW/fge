@@ -1,4 +1,4 @@
-#include "graphic_manager.hpp"
+﻿#include "graphic_manager.hpp"
 #include "application.hpp"
 #include "forward_render_path.hpp"
 #include "graphic/render_view.hpp"
@@ -63,9 +63,13 @@ void GraphicManager::init_imgui(GLFWwindow *window)
   auto app          = Application::get_instance();
   auto file_manager = app->get_file_manager();
 
+#ifndef WIN32
   io.Fonts->AddFontFromFileTTF(
-      (file_manager->get_app_res_path() / "fonts/Roboto-Medium.ttf").c_str(),
+      (file_manager->get_app_res_path() / "fonts/Roboto-Medium.ttf")
+          .string()
+          .c_str(),
       16.0f);
+#endif // WIN32
 
   ImGui_ImplGlfw_InitForOpenGL(window, true);
   ImGui_ImplOpenGL3_Init("#version 460");

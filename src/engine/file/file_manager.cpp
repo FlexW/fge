@@ -1,4 +1,4 @@
-#include "file_manager.hpp"
+﻿#include "file_manager.hpp"
 #include <stdexcept>
 
 #define CONFIG_DIR   "config"
@@ -16,7 +16,7 @@ FileManger::FileManger(const std::filesystem::path &app_root_path)
     : app_root_path(app_root_path)
 {
   app_config_path = app_root_path / CONFIG_DIR;
-  app_res_path    = app_res_path / RES_DIR;
+  app_res_path    = app_root_path / RES_DIR;
   app_cache_path  = app_root_path / CACHE_DIR;
 
   app_shader_path   = app_res_path / SHADER_DIR;

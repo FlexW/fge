@@ -6,7 +6,6 @@
 #include "graphic/texture.hpp"
 #include "log/log.hpp"
 #include "util/assert.hpp"
-#include <bits/stdint-uintn.h>
 
 namespace Fge::Gl
 {

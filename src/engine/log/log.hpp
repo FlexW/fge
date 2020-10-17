@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include <fmt/core.h>
 
@@ -27,7 +27,7 @@ enum class LogMode
 struct LogInfo
 {
   std::chrono::time_point<std::chrono::system_clock> time_point;
-  LogType                                            type;
+  LogType                                            type = LogType::Debug;
   std::thread::id                                    thread_id;
   std::string                                        msg;
   std::string                                        tag;
@@ -106,22 +106,11 @@ void set_log_level(LogType type);
 template <class TLogSink>
 void start_logger(LogType     log_level,
                   LogMode     log_mode,
-                  std::size_t reserve_count                 = 2000,
-                  bool        handle_unexpected_termination = false)
+                  std::size_t reserve_count = 2000)
 {
 #ifndef FGE_LOG_DISABLE
 
   stop_logging = false;
-
-  if (handle_unexpected_termination)
-  {
-    std::signal(SIGSEGV, termination_handler);
-    std::signal(SIGTERM, termination_handler);
-    std::signal(SIGABRT, termination_handler);
-    std::signal(SIGINT, termination_handler);
-    std::signal(SIGHUP, termination_handler);
-    std::signal(SIGFPE, termination_handler);
-  }
 
   set_log_level(log_level);
   set_sink<TLogSink>();
