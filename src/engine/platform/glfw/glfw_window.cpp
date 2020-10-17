@@ -2,6 +2,7 @@
 #include "GLFW/glfw3.h"
 #include "application.hpp"
 #include "graphic/window.hpp"
+#include "log/log.hpp"
 #include "platform/opengl/gl.hpp"
 #include "platform/opengl/util.hpp"
 
@@ -10,6 +11,11 @@
 
 namespace Fge::Glfw
 {
+
+void glfw_error_callback(int error_code, const char *description)
+{
+  warning("GlfwWindow", "Glfw error {}: {}", error_code, description);
+}
 
 void window_framebuffer_size_callback(GLFWwindow *window, int width, int height)
 {
@@ -86,6 +92,8 @@ void GlfwWindow::create_window()
   {
     throw std::runtime_error("Could not initialize glfw");
   }
+
+  glfwSetErrorCallback(glfw_error_callback);
 
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, OPENGL_VERSION_MAJOR);
   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, OPENGL_VERSION_MINOR);
@@ -169,6 +177,9 @@ Key glfw_key_to_key(int key)
 
   case GLFW_KEY_LEFT_CONTROL:
     return Key::CtrlLeft;
+
+  default:
+    FGE_FAIL("Can not handle key");
   };
 
   return Key::Unknown;
@@ -183,9 +194,44 @@ KeyAction glfw_key_action_to_key_action(int action)
 
   case GLFW_RELEASE:
     return KeyAction::Release;
+
+  case GLFW_REPEAT:
+    return KeyAction::Repeat;
+
+  default:
+    FGE_FAIL("Can not handle key action");
   }
 
   return KeyAction::Unknown;
+}
+
+int key_to_glfw_key(Key key)
+{
+  switch (key)
+  {
+  case Key::W:
+    return GLFW_KEY_W;
+
+  case Key::S:
+    return GLFW_KEY_S;
+
+  case Key::A:
+    return GLFW_KEY_A;
+
+  case Key::D:
+    return GLFW_KEY_D;
+
+  case Key::Esc:
+    return GLFW_KEY_ESCAPE;
+
+  case Key::CtrlLeft:
+    return GLFW_KEY_LEFT_CONTROL;
+
+  default:
+    FGE_FAIL("Can not handle key");
+  };
+
+  return 0;
 }
 
 void GlfwWindow::on_key(int key, int /*scancode*/, int action, int /*mods*/)
@@ -271,5 +317,16 @@ void GlfwWindow::set_capture_mouse(bool value)
 }
 
 void GlfwWindow::terminate() { glfwTerminate(); }
+
+KeyAction GlfwWindow::get_key(Key key)
+{
+  auto glfw_key = key_to_glfw_key(key);
+
+  auto action = glfwGetKey(window, glfw_key);
+
+  auto key_action = glfw_key_action_to_key_action(action);
+
+  return key_action;
+}
 
 } // namespace Fge::Glfw

@@ -13,7 +13,6 @@
 #include "scene/components/point_light_component.hpp"
 #include "scene/scene.hpp"
 #include "util/assert.hpp"
-#include <memory>
 
 namespace Fge
 {
@@ -48,11 +47,13 @@ void EditorLayer::init()
   auto actor     = scene->add_actor<Actor>();
   auto mesh_comp = actor->add_component<MeshComponent>();
   mesh_comp->set_mesh_from_file("character.dae");
+  auto script_comp = actor->add_component<LuaScriptComponent>();
+  script_comp->set_script_from_file("test_script.lua");
 
-  actor = scene->add_actor<Actor>();
-  actor->set_position(glm::vec3(3.0f, 0.0f, 0.0f));
-  mesh_comp = actor->add_component<MeshComponent>();
-  mesh_comp->set_mesh_from_file("bunny.obj");
+  // actor = scene->add_actor<Actor>();
+  // actor->set_position(glm::vec3(3.0f, 0.0f, 0.0f));
+  // mesh_comp = actor->add_component<MeshComponent>();
+  // mesh_comp->set_mesh_from_file("bunny.obj");
 
   actor = scene->add_actor<Actor>();
   actor->set_position(glm::vec3(0.0f, 10.0f, 0.0f));
@@ -61,8 +62,8 @@ void EditorLayer::init()
   // actor               = scene->add_actor<Actor>();
   // auto dir_light_comp = actor->add_component<DirectionalLightComponent>();
 
-  auto script_comp = actor->add_component<LuaScriptComponent>();
-  script_comp->set_script_from_file("test_script.lua");
+  // script_comp = actor->add_component<LuaScriptComponent>();
+  // script_comp->set_script_from_file("test_script.lua");
 
   auto scene_manager = app->get_scene_manager();
   scene_manager->set_scene(scene);
@@ -70,7 +71,37 @@ void EditorLayer::init()
   // ----------------------------- END TEST SCENE ---------------------------
 }
 
-void EditorLayer::update(float /*delta_time*/) { handle_grid_registration(); }
+void EditorLayer::do_camera_movement(float delta_time)
+{
+  if (move_camera)
+  {
+    auto window =
+        Application::get_instance()->get_graphic_manager()->get_window();
+
+    if (window->get_key(Key::W) == KeyAction::Press)
+    {
+      editor_camera.process_movement(CameraMovement::Forward, delta_time);
+    }
+    else if (window->get_key(Key::S) == KeyAction::Press)
+    {
+      editor_camera.process_movement(CameraMovement::Backward, delta_time);
+    }
+    else if (window->get_key(Key::A) == KeyAction::Press)
+    {
+      editor_camera.process_movement(CameraMovement::Left, delta_time);
+    }
+    else if (window->get_key(Key::D) == KeyAction::Press)
+    {
+      editor_camera.process_movement(CameraMovement::Right, delta_time);
+    }
+  }
+}
+
+void EditorLayer::update(float delta_time)
+{
+  handle_grid_registration();
+  do_camera_movement(delta_time);
+}
 
 void EditorLayer::fixed_update(float /*frametime*/) {}
 
@@ -111,29 +142,6 @@ bool EditorLayer::on_key_event(const KeyEvent *const event)
 
     auto app = Application::get_instance();
     app->get_graphic_manager()->get_window()->set_capture_mouse(false);
-  }
-
-  if (move_camera)
-  {
-    auto app        = Application::get_instance();
-    auto delta_time = app->get_delta_time();
-
-    if (event->key == Key::W)
-    {
-      editor_camera.process_movement(CameraMovement::Forward, delta_time);
-    }
-    else if (event->key == Key::S)
-    {
-      editor_camera.process_movement(CameraMovement::Backward, delta_time);
-    }
-    else if (event->key == Key::A)
-    {
-      editor_camera.process_movement(CameraMovement::Left, delta_time);
-    }
-    else if (event->key == Key::D)
-    {
-      editor_camera.process_movement(CameraMovement::Right, delta_time);
-    }
   }
 
   return false;

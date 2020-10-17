@@ -57,6 +57,8 @@ private:
   void unregister_grid();
 
   void register_grid();
+
+  void do_camera_movement(float delta_time);
 };
 
 } // namespace Fge

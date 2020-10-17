@@ -14,15 +14,15 @@ class GlfwWindow : public Window, public Gl::GlWindow
 public:
   GlfwWindow();
 
-  virtual void init_open_gl() override;
+  void init_open_gl() override;
 
-  virtual void create_window() override;
+  void create_window() override;
 
-  virtual void flush() override;
+  void flush() override;
 
-  virtual void set_capture_mouse(bool value) override;
+  void set_capture_mouse(bool value) override;
 
-  virtual void terminate() override;
+  void terminate() override;
 
   void on_key(int key, int scancode, int action, int mods);
 
@@ -33,6 +33,8 @@ public:
   void on_close();
 
   GLFWwindow *get_glfw_window() { return window; }
+
+  KeyAction get_key(Key key) override;
 
 private:
   GLFWwindow *window{};

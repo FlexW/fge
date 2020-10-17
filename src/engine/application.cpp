@@ -4,7 +4,9 @@
 #include "log/log.hpp"
 #include "scene/scene_manager.hpp"
 #include "util/time.hpp"
-#include <chrono>
+#include <cstdlib>
+#include <exception>
+#include <stdexcept>
 
 namespace Fge
 {
@@ -70,32 +72,40 @@ void Application::init_logging()
 
 void Application::init_application(int /*argc*/, char ** /*argv*/)
 {
-  // Create managers, order is important as some managers depend on each other
+  try
+  {
+    // Create managers, order is important as some managers depend on each other
 
-  // Create event manager
-  event_manager = std::make_shared<EventManager>();
+    // Create event manager
+    event_manager = std::make_shared<EventManager>();
 
-  // Create file manager
-  const auto app_root_path = std::filesystem::current_path();
-  file_system_manager      = std::make_shared<FileManger>(app_root_path);
+    // Create file manager
+    const auto app_root_path = std::filesystem::current_path();
+    file_system_manager      = std::make_shared<FileManger>(app_root_path);
 
-  // Create Config manager
-  config_manager = std::make_shared<ConfigManager>();
+    // Create Config manager
+    config_manager = std::make_shared<ConfigManager>();
 
-  // Logging system can now setted up
-  init_logging();
+    // Logging system can now setted up
+    init_logging();
 
-  // Create resource manager
-  resource_manager = std::make_shared<ResourceManager>();
+    // Create resource manager
+    resource_manager = std::make_shared<ResourceManager>();
 
-  // Create graphic manager
-  graphic_manager = std::make_shared<GraphicManager>();
+    // Create graphic manager
+    graphic_manager = std::make_shared<GraphicManager>();
 
-  // Create scene manager
-  scene_manager = std::make_shared<SceneManager>();
+    // Create scene manager
+    scene_manager = std::make_shared<SceneManager>();
 
-  // Register for events
-  event_manager->subscribe(this, &Application::on_close);
+    // Register for events
+    event_manager->subscribe(this, &Application::on_close);
+  }
+  catch (std::exception &e)
+  {
+    error("Application", "Unhandled exception while init: {}", e.what());
+    std::exit(EXIT_FAILURE);
+  }
 }
 
 bool Application::on_close(const WindowCloseEvent *const /*event*/)
@@ -114,9 +124,25 @@ void Application::terminate_application()
 
 int Application::run()
 {
-  graphic_manager->create_window();
+  try
+  {
+    graphic_manager->create_window();
+  }
+  catch (std::exception &e)
+  {
+    error("Application", "Could not init graphic manager: {}", e.what());
+    std::exit(EXIT_FAILURE);
+  }
 
-  layer_stack.on_init();
+  try
+  {
+    layer_stack.on_init();
+  }
+  catch (std::exception &e)
+  {
+    error("Application", "Could not init layers: {}", e.what());
+    std::exit(EXIT_FAILURE);
+  }
 
   try
   {
@@ -129,7 +155,7 @@ int Application::run()
     std::exit(EXIT_FAILURE);
   }
 
-  return 0;
+  return EXIT_SUCCESS;
 }
 
 void Application::main_loop()

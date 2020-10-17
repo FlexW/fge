@@ -30,6 +30,12 @@ private:
   bool script_loaded = false;
 
   void load_script();
+
+  void lua_bind_util(sol::state &lua);
+
+  void lua_bind_math(sol::state &lua);
+
+  void lua_bind_scene(sol::state &lua);
 };
 
 } // namespace Fge

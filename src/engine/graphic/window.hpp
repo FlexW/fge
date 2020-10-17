@@ -24,6 +24,7 @@ enum class KeyAction
 {
   Press,
   Release,
+  Repeat,
   Unknown
 };
 
@@ -70,6 +71,8 @@ public:
   virtual void set_capture_mouse(bool value) = 0;
 
   virtual void terminate() = 0;
+
+  virtual KeyAction get_key(Key key) = 0;
 
 protected:
   int width{};

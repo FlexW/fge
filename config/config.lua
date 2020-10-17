@@ -5,7 +5,7 @@ game = {
 }
 
 opengl = {
-   debug = true
+   debug = false
 }
 
 window = {
