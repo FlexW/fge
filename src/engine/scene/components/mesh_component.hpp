@@ -11,7 +11,7 @@ class MeshComponent : public Component
 {
 public:
   MeshComponent(Actor *            owner,
-                int                update_order = 100,
+                int                update_order = 1000,
                 const std::string &type_name    = "Fge::MeshComponent");
 
   ~MeshComponent();

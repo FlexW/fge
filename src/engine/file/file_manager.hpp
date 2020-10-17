@@ -43,6 +43,11 @@ public:
     return app_textures_path;
   }
 
+  const std::filesystem::path &get_scripts_path() const
+  {
+    return app_scripts_path;
+  }
+
   std::string read_text_file(const std::string &filepath);
 
 private:
@@ -53,6 +58,7 @@ private:
   std::filesystem::path app_shader_path;
   std::filesystem::path app_meshes_path;
   std::filesystem::path app_textures_path;
+  std::filesystem::path app_scripts_path;
 };
 
 } // namespace Fge
