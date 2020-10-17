@@ -10,3 +10,6 @@
 [submodule "external/glm"]
 	path = external/glm
 	url = https://github.com/FlexW/glm
+[submodule "external/sol2"]
+	path = external/sol2
+	url = https://github.com/FlexW/sol2
