@@ -96,7 +96,11 @@ void LuaScriptComponent::lua_bind_scene(sol::state &lua)
   auto actor_type = lua.new_usertype<Actor>("Actor",
                                             sol::no_constructor,
                                             "set_position",
-                                            &Actor::set_position);
+                                            &Actor::set_position,
+                                            "set_rotation_euler",
+                                            &Actor::set_rotation_euler,
+                                            "set_scale",
+                                            &Actor::set_scale);
   lua["owner"]    = owner;
 }
 
