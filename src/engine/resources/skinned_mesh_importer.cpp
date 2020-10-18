@@ -156,7 +156,7 @@ void find_necessary_ai_nodes(const aiScene *                     ai_scene,
       std::string bone_name    = ai_bone->mName.C_Str();
       auto        ai_bone_node = find_ai_node_by_name(ai_scene, bone_name);
 
-      if (not ai_bone_node)
+      if (!ai_bone_node)
       {
         FGE_FAIL("Can not find node to bone");
       }
@@ -166,7 +166,7 @@ void find_necessary_ai_nodes(const aiScene *                     ai_scene,
 
       auto ai_mesh_node =
           find_ai_node_from_ai_mesh_by_name(ai_scene, ai_mesh->mName.C_Str());
-      if (not ai_mesh_node)
+      if (!ai_mesh_node)
       {
         std::cout << "Could not find ai node for ai mesh "
                   << ai_mesh->mName.C_Str() << std::endl;

@@ -97,7 +97,7 @@ Skeleton::compute_bone_transforms(double current_time_in_seconds)
       (current_time_in_seconds - animation_start_time) * ticks_per_second;
 
   // Is animation over?
-  if (not endless_animation &&
+  if (!endless_animation &&
       current_time_in_ticks >= animation.get_duration())
   {
     active_animation_index = -1;
