@@ -14,6 +14,7 @@ enum class Key
   D,
   Esc,
   CtrlLeft,
+  F12,
 
   Unknown
 
@@ -73,6 +74,10 @@ public:
   virtual void terminate() = 0;
 
   virtual KeyAction get_key(Key key) = 0;
+
+  virtual double get_mouse_offset_x() const = 0;
+
+  virtual double get_mouse_offset_y() const = 0;
 
 protected:
   int width{};

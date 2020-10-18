@@ -185,4 +185,18 @@ void Actor::set_rotation_euler(const glm::vec3 &degrees)
   update_forward();
 }
 
+std::shared_ptr<Component>
+Actor::find_component_by_type_name(const std::string &type_name)
+{
+  for (auto component : components)
+  {
+    if (component->type_name == type_name)
+    {
+      return component;
+    }
+  }
+
+  return nullptr;
+}
+
 } // namespace Fge

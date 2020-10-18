@@ -9,7 +9,7 @@ SceneViewport::SceneViewport() {}
 
 void SceneViewport::init() { create_scene_render_view(); }
 
-void SceneViewport::draw(Camera &editor_camera)
+void SceneViewport::draw(const CameraInfo &camera_info)
 {
   ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
   ImGui::Begin("Viewport");
@@ -23,11 +23,11 @@ void SceneViewport::draw(Camera &editor_camera)
     viewport_width  = viewport_size.x;
     viewport_height = viewport_size.y;
 
-    recreate_projection_mat(editor_camera);
+    recreate_projection_mat(camera_info);
   }
 
   scene_render_view->render(projection_mat,
-                            editor_camera,
+                            camera_info,
                             viewport_width,
                             viewport_height,
                             samples);
@@ -41,10 +41,10 @@ void SceneViewport::draw(Camera &editor_camera)
   ImGui::PopStyleVar();
 }
 
-void SceneViewport::recreate_projection_mat(Camera &editor_camera)
+void SceneViewport::recreate_projection_mat(const CameraInfo &camera_info)
 {
   projection_mat =
-      glm::perspective(editor_camera.get_zoom(),
+      glm::perspective(camera_info.zoom,
                        static_cast<float>(viewport_width) / viewport_height,
                        0.1f,
                        500.0f);

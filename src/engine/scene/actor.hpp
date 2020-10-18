@@ -88,6 +88,13 @@ public:
 
   void set_name(const std::string &name) { this->name = name; }
 
+  const glm::vec3 &get_forward() { return forward; }
+
+  const glm::vec3 &get_right() { return right; }
+
+  std::shared_ptr<Component>
+  find_component_by_type_name(const std::string &type_name);
+
 protected:
   Scene *scene{};
 

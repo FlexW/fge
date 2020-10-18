@@ -1,6 +1,6 @@
 #pragma once
 
-#include "graphic/camera.hpp"
+#include "graphic/camera_controller.hpp"
 #include "graphic/render_view.hpp"
 #include "math/math.hpp"
 #include "std.hpp"
@@ -15,7 +15,7 @@ public:
 
   void init();
 
-  void draw(Camera &editor_camera);
+  void draw(const CameraInfo &camera_info);
 
 private:
   float viewport_x{};
@@ -30,7 +30,7 @@ private:
 
   std::shared_ptr<RenderView> scene_render_view{};
 
-  void recreate_projection_mat(Camera &editor_camera);
+  void recreate_projection_mat(const CameraInfo &camera_info);
 
   void create_scene_render_view();
 };

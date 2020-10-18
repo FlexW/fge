@@ -9,6 +9,7 @@
 #include "log/log.hpp"
 #include "scene/actor.hpp"
 #include "scene/components/components.hpp"
+#include "scene/components/follow_camera_component.hpp"
 #include "scene/components/lua_script_component.hpp"
 #include "scene/components/point_light_component.hpp"
 #include "scene/components/sphere_rigid_body_component.hpp"
@@ -59,6 +60,9 @@ void EditorLayer::init()
   auto skinned_mesh_comp = actor->add_component<SkinnedMeshComponent>();
   skinned_mesh_comp->set_mesh_from_file("character.dae");
   skinned_mesh_comp->play_animation_endless("Animation 0");
+  auto follow_camera_comp = actor->add_component<FollowCameraComponent>();
+  script_comp             = actor->add_component<LuaScriptComponent>();
+  script_comp->set_script_from_file("move_character.lua");
 
   actor = scene->add_actor<Actor>();
   actor->set_scale(glm::vec3(10.0f));
@@ -146,7 +150,12 @@ void EditorLayer::render() {}
 void EditorLayer::imgui_render()
 {
   dockspace.draw();
-  scene_viewport.draw(editor_camera);
+
+  auto app                = Application::get_instance();
+  auto camera_controller  = app->get_graphic_manager()->get_camera_controller();
+  const auto &camera_info = camera_controller.get_camera_info();
+
+  scene_viewport.draw(camera_info);
 
   // bool show = true;
   // ImGui::ShowDemoWindow(&show);

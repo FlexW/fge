@@ -1,6 +1,7 @@
 #pragma once
 
 #include "camera.hpp"
+#include "camera_controller.hpp"
 #include "graphic/framebuffer.hpp"
 #include "math/math.hpp"
 #include "std.hpp"
@@ -21,11 +22,11 @@ public:
 
   RenderView(Target target, uint32_t width, uint32_t height, uint32_t samples);
 
-  void render(const glm::mat4 &projection_mat,
-              const Camera &   camera,
-              uint32_t         width,
-              uint32_t         height,
-              uint32_t         samples);
+  void render(const glm::mat4 & projection_mat,
+              const CameraInfo &camera_info,
+              uint32_t          width,
+              uint32_t          height,
+              uint32_t          samples);
 
   uint32_t get_target_id() const { return target_id; }
 

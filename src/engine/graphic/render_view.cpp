@@ -25,11 +25,11 @@ RenderView::RenderView(Target   target,
   }
 }
 
-void RenderView::render(const glm::mat4 &projection_mat,
-                        const Camera &   camera,
-                        uint32_t         width,
-                        uint32_t         height,
-                        uint32_t         samples)
+void RenderView::render(const glm::mat4 & projection_mat,
+                        const CameraInfo &camera_info,
+                        uint32_t          width,
+                        uint32_t          height,
+                        uint32_t          samples)
 {
   auto app             = Application::get_instance();
   auto graphic_manager = app->get_graphic_manager();
@@ -48,7 +48,7 @@ void RenderView::render(const glm::mat4 &projection_mat,
     }
 
     target_fb->bind();
-    render_path->render(projection_mat, camera, width, height);
+    render_path->render(projection_mat, camera_info, width, height);
 
     if (last_samples > 0)
     {
@@ -72,7 +72,7 @@ void RenderView::render(const glm::mat4 &projection_mat,
     return;
   }
 
-  render_path->render(projection_mat, camera, width, height);
+  render_path->render(projection_mat, camera_info, width, height);
 }
 
 void RenderView::recreate_target_framebuffer(uint32_t width,

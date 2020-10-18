@@ -67,10 +67,10 @@ void ForwardRenderPath::set_lightning_uniforms(
   material.set_uniform("directional_light_enabled", true);
 }
 
-void ForwardRenderPath::render(const glm::mat4 &projection_mat,
-                               const Camera &   camera,
-                               uint32_t         width,
-                               uint32_t         height)
+void ForwardRenderPath::render(const glm::mat4 & projection_mat,
+                               const CameraInfo &camera_info,
+                               uint32_t          width,
+                               uint32_t          height)
 {
   auto app             = Application::get_instance();
   auto graphic_manager = app->get_graphic_manager();
@@ -84,7 +84,8 @@ void ForwardRenderPath::render(const glm::mat4 &projection_mat,
   const auto &point_lights       = renderer->get_point_lights();
   const auto &directional_lights = renderer->get_directional_lights();
 
-  const auto view_mat = camera.get_view_matrix();
+  const auto view_mat = camera_info.view_mat;
+
   for (auto renderable : renderables)
   {
     auto material = renderable->get_material();

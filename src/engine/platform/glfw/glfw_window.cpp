@@ -152,6 +152,9 @@ void GlfwWindow::create_window()
 
 void GlfwWindow::flush()
 {
+  mouse_offset_x = 0.0f;
+  mouse_offset_y = 0.0f;
+
   glfwSwapBuffers(window);
   glfwPollEvents();
 }
@@ -177,6 +180,9 @@ Key glfw_key_to_key(int key)
 
   case GLFW_KEY_LEFT_CONTROL:
     return Key::CtrlLeft;
+
+  case GLFW_KEY_F12:
+    return Key::F12;
 
   default:
     FGE_FAIL("Can not handle key");
@@ -226,6 +232,9 @@ int key_to_glfw_key(Key key)
 
   case Key::CtrlLeft:
     return GLFW_KEY_LEFT_CONTROL;
+
+  case Key::F12:
+    return GLFW_KEY_F12;
 
   default:
     FGE_FAIL("Can not handle key");
@@ -281,6 +290,9 @@ void GlfwWindow::on_mouse_movement(double x, double y)
   {
     x_offset = x - mouse_last_x;
     y_offset = mouse_last_y - y;
+
+    mouse_offset_x = x_offset;
+    mouse_offset_y = y_offset;
 
     mouse_last_x = x;
     mouse_last_y = y;

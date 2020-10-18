@@ -1,5 +1,6 @@
 #pragma once
 
+#include "camera_controller.hpp"
 #include "platform/glfw/glfw.hpp"
 #include "render_path.hpp"
 #include "render_view.hpp"
@@ -39,7 +40,11 @@ public:
 
   std::shared_ptr<RenderPath> get_render_path() { return render_path; }
 
+  CameraController &get_camera_controller() { return camera_controller; }
+
 private:
+  CameraController camera_controller;
+
   std::shared_ptr<Window> window{};
 
   std::shared_ptr<Renderer> renderer{};

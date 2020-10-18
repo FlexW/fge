@@ -36,12 +36,18 @@ public:
 
   KeyAction get_key(Key key) override;
 
+  double get_mouse_offset_x() const override { return mouse_offset_x; }
+
+  double get_mouse_offset_y() const override { return mouse_offset_y; }
+
 private:
   GLFWwindow *window{};
 
   bool   mouse_first_move = true;
   double mouse_last_x{};
   double mouse_last_y{};
+  double mouse_offset_x{};
+  double mouse_offset_y{};
 
   bool opengl_debug = true;
 };
