@@ -46,22 +46,5 @@ target_include_directories(
   .
   )
 
-# Link resource directory
-set (source "${CMAKE_CURRENT_SOURCE_DIR}/../../res")
-set (destination "${CMAKE_CURRENT_BINARY_DIR}/../../res")
-add_custom_command(
-  TARGET engine POST_BUILD
-  COMMAND ${CMAKE_COMMAND} -E create_symlink ${source} ${destination}
-  DEPENDS ${destination}
-  COMMENT "symbolic link resources folder from ${source} => ${destination}"
-)
-
-# Link config directory
-set (source "${CMAKE_CURRENT_SOURCE_DIR}/../../config")
-set (destination "${CMAKE_CURRENT_BINARY_DIR}/../../config")
-add_custom_command(
-  TARGET engine POST_BUILD
-  COMMAND ${CMAKE_COMMAND} -E create_symlink ${source} ${destination}
-  DEPENDS ${destination}
-  COMMENT "symbolic link resources folder from ${source} => ${destination}"
-)
+  configure_file(${CMAKE_CURRENT_SOURCE_DIR}/file/root_directory.hpp.in ${CMAKE_CURRENT_BINARY_DIR}/file/root_directory.hpp)
+  target_include_directories(engine PUBLIC ${CMAKE_CURRENT_BINARY_DIR})

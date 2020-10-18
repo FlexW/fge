@@ -4,8 +4,6 @@
 
 Be sure OpenGL 4.6 is available.
 
-### Linux
-
 Clone the repo and init submodules
 ```
 git clone https://github.com/FlexW/fge
@@ -13,7 +11,9 @@ cd fge
 git submodule update --init --recursive
 ```
 
-Packages for Fedora:
+### Linux
+
+Install all needed packages for your distro. The needed packages for Fedora are:
 ```
 cmake
 ninja
@@ -25,12 +25,17 @@ libXi-devel
 mesa-libGL-devel
 ```
 
+Then build the project:
 ```
 mkdir build
 cd build
-cmake ..
-make
+cmake -G Ninja ..
+ninja
 ```
+
+### Windows
+To build with Visual Studio just open Visual Studio and then open the project directory. 
+Visual Studio will automatically configure everything. Choose `editor.exe` as start up element.
 
 ## Models
 

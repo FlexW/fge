@@ -1,4 +1,4 @@
-#include "lua_script_component.hpp"
+﻿#include "lua_script_component.hpp"
 #include "application.hpp"
 #include "glm/ext/vector_float3.hpp"
 #include "log/log.hpp"
@@ -51,7 +51,6 @@ void LuaScriptComponent::lua_bind_util(sol::state &lua)
 
 void LuaScriptComponent::lua_bind_math(sol::state &lua)
 {
-
   auto mult_overloads = sol::overload(
       [](const glm::vec3 &v1, const glm::vec3 &v2) -> glm::vec3 {
         return v1 * v2;
@@ -84,15 +83,14 @@ void LuaScriptComponent::lua_bind_math(sol::state &lua)
       sol::meta_function::to_string,
       [](const glm::vec3 &v) { return glm::to_string(v); });
 
-  lua["sin"] = sin;
-  lua["cos"] = cos;
-  lua["tan"] = tan;
-  lua["abs"] = glm::abs<float>;
+  lua["sin"] = [](double v) { return glm::sin(v); };
+  lua["cos"] = [](double v) { return glm::cos(v); };
+  lua["tan"] = [](double v) { return glm::tan(v); };
+  lua["abs"] = glm::abs<double>;
 }
 
 void LuaScriptComponent::lua_bind_scene(sol::state &lua)
 {
-
   auto actor_type = lua.new_usertype<Actor>("Actor",
                                             sol::no_constructor,
                                             "set_position",
@@ -101,7 +99,8 @@ void LuaScriptComponent::lua_bind_scene(sol::state &lua)
                                             &Actor::set_rotation_euler,
                                             "set_scale",
                                             &Actor::set_scale);
-  lua["owner"]    = owner;
+
+  lua["owner"] = owner;
 }
 
 void LuaScriptComponent::load_script()
@@ -124,8 +123,9 @@ void LuaScriptComponent::load_script()
 
   try
   {
-    lua.script_file(file_manager->get_scripts_path() / script_filepath,
-                    sol::script_default_on_error);
+    lua.script_file(
+        (file_manager->get_scripts_path() / script_filepath).string(),
+        sol::script_default_on_error);
   }
   catch (std::exception &e)
   {
