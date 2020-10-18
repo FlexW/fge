@@ -53,6 +53,12 @@ void EditorLayer::init()
   auto script_comp = actor->add_component<LuaScriptComponent>();
   script_comp->set_script_from_file("test_script.lua");
 
+  actor = scene->add_actor<Actor>();
+  actor->set_position(glm::vec3(10.0f, 0.0f, 0.0f));
+  auto skinned_mesh_comp = actor->add_component<SkinnedMeshComponent>();
+  skinned_mesh_comp->set_mesh_from_file("character.dae");
+  skinned_mesh_comp->play_animation_endless("Animation 0");
+
   // actor = scene->add_actor<Actor>();
   // actor->set_position(glm::vec3(3.0f, 0.0f, 0.0f));
   // mesh_comp = actor->add_component<MeshComponent>();

@@ -21,6 +21,8 @@ public:
 
   void set_world_matrix(const glm::mat4 &world_mat) override;
 
+  void set_bone_transforms(const std::vector<glm::mat4> &bones) override;
+
   void set_ambient_texture(std::shared_ptr<Texture2D> tex);
 
   void set_diffuse_texture(std::shared_ptr<Texture2D> tex);

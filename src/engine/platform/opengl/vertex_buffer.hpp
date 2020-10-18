@@ -30,6 +30,28 @@ private:
   VertexBufferLayout vertex_buffer_layout;
 };
 
+class VertexBufferPNTBBWT : public Fge::VertexBuffer
+{
+public:
+  VertexBufferPNTBBWT(const std::vector<VertexPNTBBWT> &vertices);
+
+  ~VertexBufferPNTBBWT();
+
+  const Fge::VertexBufferLayout &get_layout() const override;
+
+  void bind() override;
+
+  void unbind() override;
+
+  uint32_t get_count() const override;
+
+private:
+  uint32_t id    = 0;
+  uint32_t count = 0;
+
+  VertexBufferLayout vertex_buffer_layout;
+};
+
 class VertexBufferP : public Fge::VertexBuffer
 {
 public:

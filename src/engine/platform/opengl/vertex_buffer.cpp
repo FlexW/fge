@@ -17,11 +17,11 @@ VertexBufferPNTBT::VertexBufferPNTBT(const std::vector<VertexPNTBT> &vertices)
                vertices.data(),
                GL_STATIC_DRAW);
 
-  vertex_buffer_layout.push_float(3);
-  vertex_buffer_layout.push_float(3);
-  vertex_buffer_layout.push_float(3);
-  vertex_buffer_layout.push_float(3);
-  vertex_buffer_layout.push_float(2);
+  vertex_buffer_layout.push_float(3); // position
+  vertex_buffer_layout.push_float(3); // normal
+  vertex_buffer_layout.push_float(3); // tangent
+  vertex_buffer_layout.push_float(3); // bitangent
+  vertex_buffer_layout.push_float(2); // tex_coord
 }
 
 VertexBufferPNTBT::~VertexBufferPNTBT()
@@ -41,6 +41,45 @@ void VertexBufferPNTBT::unbind() { glBindBuffer(GL_ARRAY_BUFFER, 0); }
 
 uint32_t VertexBufferPNTBT::get_count() const { return count; }
 
+VertexBufferPNTBBWT::VertexBufferPNTBBWT(
+    const std::vector<VertexPNTBBWT> &vertices)
+    : count(vertices.size())
+{
+  glGenBuffers(1, &id);
+  trace("VertexBufferPNTBBWT", "Created vertex buffer with id: {}", id);
+  glBindBuffer(GL_ARRAY_BUFFER, id);
+
+  glBufferData(GL_ARRAY_BUFFER,
+               vertices.size() * sizeof(VertexPNTBBWT),
+               vertices.data(),
+               GL_STATIC_DRAW);
+
+  vertex_buffer_layout.push_float(3); // position
+  vertex_buffer_layout.push_float(3); // normal
+  vertex_buffer_layout.push_float(3); // tangent
+  vertex_buffer_layout.push_float(3); // bitangent
+  vertex_buffer_layout.push_int(4);   // skin_bones
+  vertex_buffer_layout.push_float(4); // skin_weights
+  vertex_buffer_layout.push_float(2); // tex_coord
+}
+
+VertexBufferPNTBBWT::~VertexBufferPNTBBWT()
+{
+  trace("VertexBufferPNTBBWT", "Delete vertex buffer with id: {}", id);
+  glDeleteBuffers(1, &id);
+}
+
+const Fge::VertexBufferLayout &VertexBufferPNTBBWT::get_layout() const
+{
+  return vertex_buffer_layout;
+}
+
+void VertexBufferPNTBBWT::bind() { glBindBuffer(GL_ARRAY_BUFFER, id); }
+
+void VertexBufferPNTBBWT::unbind() { glBindBuffer(GL_ARRAY_BUFFER, 0); }
+
+uint32_t VertexBufferPNTBBWT::get_count() const { return count; }
+
 VertexBufferP::VertexBufferP(const std::vector<VertexP> &vertices)
     : count(vertices.size())
 {
@@ -53,7 +92,7 @@ VertexBufferP::VertexBufferP(const std::vector<VertexP> &vertices)
                vertices.data(),
                GL_STATIC_DRAW);
 
-  vertex_buffer_layout.push_float(3);
+  vertex_buffer_layout.push_float(3); // position
 }
 
 VertexBufferP::~VertexBufferP()

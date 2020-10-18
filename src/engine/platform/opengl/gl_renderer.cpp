@@ -93,6 +93,12 @@ Renderer::create_vertex_buffer(const std::vector<VertexP> &vertices)
   return std::make_shared<Gl::VertexBufferP>(vertices);
 }
 
+std::shared_ptr<VertexBuffer>
+Renderer::create_vertex_buffer(const std::vector<VertexPNTBBWT> &vertices)
+{
+  return std::make_shared<Gl::VertexBufferPNTBBWT>(vertices);
+}
+
 std::shared_ptr<Fge::Texture2D>
 Renderer::create_texture2d(const Texture2DConfig &config)
 {

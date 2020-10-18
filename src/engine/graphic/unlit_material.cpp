@@ -1,6 +1,7 @@
 #include "unlit_material.hpp"
 #include "application.hpp"
 #include "graphic/mesh_material.hpp"
+#include "util/assert.hpp"
 
 namespace Fge
 {
@@ -21,7 +22,10 @@ void UnlitMaterial::bind(uint32_t texture_bind_point)
   bind_uniforms(shader, texture_bind_point);
 }
 
-void UnlitMaterial::set_skinned_mesh(bool /*value*/) {}
+void UnlitMaterial::set_skinned_mesh(bool /*value*/)
+{
+  FGE_FAIL("Unlit Material can not handle skinned meshes");
+}
 
 void UnlitMaterial::set_rigid_mesh(bool /*value*/) {}
 
@@ -33,6 +37,12 @@ void UnlitMaterial::set_world_matrix(const glm::mat4 &world_mat)
 void UnlitMaterial::set_color(const glm::vec3 &color)
 {
   set_uniform("color", color);
+}
+
+void UnlitMaterial::set_bone_transforms(
+    const std::vector<glm::mat4> & /*bones*/)
+{
+  FGE_FAIL("Unlit Material can not handle bones");
 }
 
 std::shared_ptr<Material> UnlitMaterial::clone()

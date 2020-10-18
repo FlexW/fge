@@ -17,6 +17,8 @@ public:
 
   void set_world_matrix(const glm::mat4 &world_mat) override;
 
+  void set_bone_transforms(const std::vector<glm::mat4> &bones) override;
+
   void set_color(const glm::vec3 &color);
 
   std::shared_ptr<Material> clone() override;

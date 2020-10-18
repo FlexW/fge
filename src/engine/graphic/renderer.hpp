@@ -50,6 +50,9 @@ public:
   virtual std::shared_ptr<VertexBuffer>
   create_vertex_buffer(const std::vector<VertexP> &vertices) = 0;
 
+  virtual std::shared_ptr<VertexBuffer>
+  create_vertex_buffer(const std::vector<VertexPNTBBWT> &vertices) = 0;
+
   virtual std::shared_ptr<Shader>
   create_shader(const std::string &             vertex_shader_filename,
                 const std::string &             fragment_shader_filename,

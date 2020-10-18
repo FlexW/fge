@@ -42,6 +42,9 @@ public:
   std::shared_ptr<Fge::VertexBuffer>
   create_vertex_buffer(const std::vector<VertexP> &vertices) override;
 
+  std::shared_ptr<VertexBuffer>
+  create_vertex_buffer(const std::vector<VertexPNTBBWT> &vertices) override;
+
   std::shared_ptr<Fge::Shader>
   create_shader(const std::string &             vertex_shader_filename,
                 const std::string &             fragment_shader_filename,

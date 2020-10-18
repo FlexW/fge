@@ -35,6 +35,11 @@ void DefaultMaterial::set_world_matrix(const glm::mat4 &world_mat)
   set_uniform("world_mat", world_mat);
 }
 
+void DefaultMaterial::set_bone_transforms(const std::vector<glm::mat4> &bones)
+{
+  set_uniform("bones", bones);
+}
+
 void DefaultMaterial::set_ambient_texture(std::shared_ptr<Texture2D> tex)
 {
   FGE_ASSERT(tex);

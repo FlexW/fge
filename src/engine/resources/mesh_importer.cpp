@@ -1,70 +1,15 @@
-#include <assimp/Importer.hpp>
-#include <assimp/postprocess.h>
-#include <assimp/scene.h>
-
+#include "mesh_importer.hpp"
 #include "application.hpp"
 #include "graphic/default_material.hpp"
 #include "graphic/mesh.hpp"
+#include "graphic/skinned_mesh.hpp"
 #include "graphic/vertices.hpp"
 #include "log/log.hpp"
-#include "mesh_importer.hpp"
+#include "mesh_importer_common.hpp"
 #include "util/assert.hpp"
 
 namespace Fge
 {
-
-std::shared_ptr<Texture2D> load_texture(aiMaterial *  ai_material,
-                                        aiTextureType ai_texture_type,
-                                        bool          flip = false)
-{
-  uint32_t texture_count = ai_material->GetTextureCount(ai_texture_type);
-  if (texture_count == 0)
-  {
-    return nullptr;
-  }
-  else if (texture_count > 1)
-  {
-    warning("MeshLoader",
-            "Mesh has more than one texture defined. Can just handle one.");
-  }
-
-  aiString path;
-  ai_material->GetTexture(ai_texture_type, 0, &path);
-
-  auto app         = Application::get_instance();
-  auto res_manager = app->get_resource_manager();
-
-  return res_manager->load_texture2d(path.C_Str(), flip);
-}
-
-std::shared_ptr<DefaultMaterial> load_material(const aiScene *ai_scene,
-                                               aiMesh *       ai_mesh)
-{
-  auto material = std::make_shared<DefaultMaterial>();
-
-  aiMaterial *ai_material = ai_scene->mMaterials[ai_mesh->mMaterialIndex];
-
-  auto ambient_tex  = load_texture(ai_material, aiTextureType_AMBIENT, true);
-  auto diffuse_tex  = load_texture(ai_material, aiTextureType_DIFFUSE, true);
-  auto specular_tex = load_texture(ai_material, aiTextureType_SPECULAR, true);
-
-  if (ambient_tex)
-  {
-    material->set_ambient_texture(ambient_tex);
-  }
-  if (diffuse_tex)
-  {
-    material->set_diffuse_texture(diffuse_tex);
-  }
-  if (specular_tex)
-  {
-    material->set_specular_texture(specular_tex);
-  }
-
-  material->set_specular_power(200.0f);
-
-  return material;
-}
 
 void do_load_mesh(const aiScene *                        ai_scene,
                   aiNode *                               ai_node,
@@ -73,7 +18,7 @@ void do_load_mesh(const aiScene *                        ai_scene,
 {
   auto transform = parent_transform * ai_node->mTransformation;
 
-  for (unsigned i = 0; i < ai_node->mNumMeshes; ++i)
+  for (uint32_t i = 0; i < ai_node->mNumMeshes; ++i)
   {
     auto ai_mesh = ai_scene->mMeshes[ai_node->mMeshes[i]];
     std::cout << "Found mesh " << ai_mesh->mName.C_Str() << " in node "
@@ -83,7 +28,7 @@ void do_load_mesh(const aiScene *                        ai_scene,
     auto vertices = std::make_shared<std::vector<VertexPNTBT>>();
     vertices->reserve(ai_mesh->mNumVertices);
 
-    for (unsigned j = 0; j < ai_mesh->mNumVertices; ++j)
+    for (uint32_t j = 0; j < ai_mesh->mNumVertices; ++j)
     {
       VertexPNTBT vertex;
 
@@ -124,9 +69,9 @@ void do_load_mesh(const aiScene *                        ai_scene,
     // Load indices
     std::cout << "Load " << ai_mesh->mNumFaces << " faces in mesh "
               << ai_mesh->mName.C_Str() << std::endl;
-    auto indices = std::make_shared<std::vector<unsigned>>();
+    auto indices = std::make_shared<std::vector<uint32_t>>();
     indices->reserve(ai_mesh->mNumFaces * 3);
-    for (unsigned j = 0; j < ai_mesh->mNumFaces; ++j)
+    for (uint32_t j = 0; j < ai_mesh->mNumFaces; ++j)
     {
       const auto ai_face = ai_mesh->mFaces[j];
       if (ai_face.mNumIndices != 3)
@@ -148,7 +93,7 @@ void do_load_mesh(const aiScene *                        ai_scene,
     sub_meshes.emplace_back(sub_mesh);
   }
 
-  for (unsigned i = 0; i < ai_node->mNumChildren; ++i)
+  for (uint32_t i = 0; i < ai_node->mNumChildren; ++i)
   {
     do_load_mesh(ai_scene, ai_node->mChildren[i], transform, sub_meshes);
   }

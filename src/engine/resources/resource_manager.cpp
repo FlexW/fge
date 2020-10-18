@@ -3,9 +3,11 @@
 #include "application.hpp"
 #include "graphic/mesh.hpp"
 #include "graphic/mesh_material.hpp"
+#include "graphic/skinned_mesh.hpp"
 #include "graphic/texture.hpp"
 #include "mesh_importer.hpp"
 #include "resource_manager.hpp"
+#include "skinned_mesh_importer.hpp"
 #include "util/assert.hpp"
 
 #define MESH_DIR    "meshes"
@@ -48,6 +50,34 @@ std::shared_ptr<Mesh> create_mesh_instance(std::shared_ptr<Mesh> mesh)
   return std::make_shared<Mesh>(new_sub_meshes);
 }
 
+std::shared_ptr<SkinnedMesh>
+create_mesh_instance(std::shared_ptr<SkinnedMesh> mesh)
+{
+  std::vector<std::shared_ptr<SkinnedSubMesh>> new_sub_meshes;
+
+  for (auto sub_mesh : mesh->get_sub_meshes())
+  {
+    auto name         = sub_mesh->get_name();
+    auto vertices     = sub_mesh->get_vertices();
+    auto indices      = sub_mesh->get_indices();
+    auto vertex_array = sub_mesh->get_vertex_array();
+    auto index_buffer = sub_mesh->get_index_buffer();
+    auto material     = std::static_pointer_cast<MeshMaterial>(
+        sub_mesh->get_material()->clone());
+
+    auto new_sub_mesh = std::make_shared<SkinnedSubMesh>(name,
+                                                         vertices,
+                                                         indices,
+                                                         material,
+                                                         vertex_array,
+                                                         index_buffer);
+
+    new_sub_meshes.push_back(new_sub_mesh);
+  }
+
+  return std::make_shared<SkinnedMesh>(new_sub_meshes, mesh->get_skeleton());
+}
+
 std::shared_ptr<Mesh> ResourceManager::load_mesh(const std::string &filepath)
 {
   std::shared_ptr<Mesh> mesh{};
@@ -62,6 +92,28 @@ std::shared_ptr<Mesh> ResourceManager::load_mesh(const std::string &filepath)
     mesh =
         import_mesh_from_file((resource_path / MESH_DIR / filepath).string());
     mesh_cache[filepath] = mesh;
+  }
+
+  auto mesh_instance = create_mesh_instance(mesh);
+
+  return mesh_instance;
+}
+
+std::shared_ptr<SkinnedMesh>
+ResourceManager::load_skinned_mesh(const std::string &filepath)
+{
+  std::shared_ptr<SkinnedMesh> mesh{};
+
+  auto iter = skinned_mesh_cache.find(filepath);
+  if (iter != skinned_mesh_cache.end())
+  {
+    mesh = iter->second;
+  }
+  else
+  {
+    mesh = import_skinned_mesh_from_file(
+        (resource_path / MESH_DIR / filepath).string());
+    skinned_mesh_cache[filepath] = mesh;
   }
 
   auto mesh_instance = create_mesh_instance(mesh);

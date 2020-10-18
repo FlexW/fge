@@ -67,7 +67,7 @@ public:
 private:
   std::string name;
 
-  std::shared_ptr<std::vector<VertexPNTBT>> vertices{};
+  std::shared_ptr<std::vector<TVertex>>     vertices{};
   std::shared_ptr<std::vector<uint32_t>>    indices{};
 
   std::shared_ptr<VertexArray> vertex_array{};
