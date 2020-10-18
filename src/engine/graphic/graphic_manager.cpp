@@ -53,6 +53,13 @@ void GraphicManager::init_imgui(GLFWwindow *window)
   io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
   io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 
+  // Needs to stay there as long as imgui is running
+  const static std::string imgui_config_dir =
+      (Application::get_instance()->get_file_manager()->get_app_config_path() /
+       "imgui_editor.ini")
+          .string();
+  io.IniFilename = imgui_config_dir.c_str();
+
   // Setup Dear ImGui style
   ImGui::StyleColorsDark();
   ImGuiStyle &style                 = ImGui::GetStyle();

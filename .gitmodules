@@ -13,3 +13,9 @@
 [submodule "external/sol2"]
 	path = external/sol2
 	url = https://github.com/FlexW/sol2
+[submodule "external/external/bullet"]
+	path = external/external/bullet
+	url = https://github.com/bulletphysics/bullet3
+[submodule "external/bullet"]
+	path = external/bullet
+	url = https://github.com/bulletphysics/bullet3
