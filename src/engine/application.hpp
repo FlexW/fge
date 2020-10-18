@@ -6,6 +6,7 @@
 #include "graphic/graphic_manager.hpp"
 #include "layer.hpp"
 #include "layer_stack.hpp"
+#include "physic/physic_manager.hpp"
 #include "resources/resource_manager.hpp"
 #include "scene/scene_manager.hpp"
 #include "std.hpp"
@@ -46,6 +47,8 @@ public:
 
   std::shared_ptr<SceneManager> get_scene_manager() { return scene_manager; }
 
+  std::shared_ptr<PhysicManager> get_physic_manager() { return physic_manager; }
+
   void close();
 
   float get_delta_time() const { return delta_time; }
@@ -62,6 +65,7 @@ private:
   std::shared_ptr<ResourceManager> resource_manager{};
   std::shared_ptr<GraphicManager>  graphic_manager{};
   std::shared_ptr<SceneManager>    scene_manager{};
+  std::shared_ptr<PhysicManager>   physic_manager{};
 
   bool close_app = false;
 

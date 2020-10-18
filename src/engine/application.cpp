@@ -3,8 +3,10 @@
 #include "file/root_directory.hpp"
 #include "log/io_log_sink.hpp"
 #include "log/log.hpp"
+#include "physic/physic_manager.hpp"
 #include "scene/scene_manager.hpp"
 #include "util/time.hpp"
+#include <exception>
 
 namespace Fge
 {
@@ -92,6 +94,9 @@ void Application::init_application(int /*argc*/, char ** /*argv*/)
     // Create graphic manager
     graphic_manager = std::make_shared<GraphicManager>();
 
+    // Create physic manager
+    physic_manager = std::make_shared<PhysicManager>();
+
     // Create scene manager
     scene_manager = std::make_shared<SceneManager>();
 
@@ -115,6 +120,7 @@ bool Application::on_close(const WindowCloseEvent *const /*event*/)
 void Application::terminate_application()
 {
   scene_manager->terminate();
+  physic_manager->terminate();
   graphic_manager->terminate();
   terminate_logger();
 }
@@ -128,6 +134,16 @@ int Application::run()
   catch (std::exception &e)
   {
     error("Application", "Could not init graphic manager: {}", e.what());
+    std::exit(EXIT_FAILURE);
+  }
+
+  try
+  {
+    physic_manager->init();
+  }
+  catch (std::exception &e)
+  {
+    error("Application", "Could not init physic manager: {}", e.what());
     std::exit(EXIT_FAILURE);
   }
 
@@ -166,10 +182,12 @@ void Application::main_loop()
 
     scene_manager->on_update(delta_time);
     layer_stack.on_update(delta_time);
+    physic_manager->update(delta_time);
 
     graphic_manager->begin_render();
 
     layer_stack.on_render();
+    physic_manager->render();
 
     graphic_manager->begin_imgui_render();
     layer_stack.on_imgui_render();

@@ -18,6 +18,7 @@ target_link_libraries(
   editor
   PRIVATE
   engine
+  BulletDynamics
   )
 
 target_compile_features(editor PUBLIC cxx_std_17)

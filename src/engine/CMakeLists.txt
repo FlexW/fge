@@ -32,6 +32,11 @@ target_link_libraries(
   assimp
   glm
   stb
+  BulletCollision
+  BulletDynamics
+  BulletInverseDynamics
+  BulletSoftBody
+  LinearMath
   )
 
 target_compile_features(engine PUBLIC cxx_std_17)
@@ -44,6 +49,7 @@ target_include_directories(
   engine
   PUBLIC
   .
+  "${CMAKE_SOURCE_DIR}/external/bullet/src"
   )
 
   configure_file(${CMAKE_CURRENT_SOURCE_DIR}/file/root_directory.hpp.in ${CMAKE_CURRENT_BINARY_DIR}/file/root_directory.hpp)

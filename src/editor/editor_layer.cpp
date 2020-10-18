@@ -11,6 +11,7 @@
 #include "scene/components/components.hpp"
 #include "scene/components/lua_script_component.hpp"
 #include "scene/components/point_light_component.hpp"
+#include "scene/components/sphere_rigid_body_component.hpp"
 #include "scene/scene.hpp"
 #include "util/assert.hpp"
 
@@ -58,6 +59,32 @@ void EditorLayer::init()
   auto skinned_mesh_comp = actor->add_component<SkinnedMeshComponent>();
   skinned_mesh_comp->set_mesh_from_file("character.dae");
   skinned_mesh_comp->play_animation_endless("Animation 0");
+
+  actor = scene->add_actor<Actor>();
+  actor->set_scale(glm::vec3(10.0f));
+  mesh_comp = actor->add_component<MeshComponent>();
+  mesh_comp->set_mesh_from_file("plane.dae");
+  auto box_rigid_body_comp = actor->add_component<BoxRigidBodyComponent>();
+  box_rigid_body_comp->set_half_extents(10.0f, 0.01f, 10.0f);
+  box_rigid_body_comp->set_mass(0.0f);
+
+  actor = scene->add_actor<Actor>();
+  actor->set_position(glm::vec3(0.9f, 0.0f, 0.0f));
+  actor->set_rotation_euler(glm::vec3(0.2f, 0.1f, 0.0f));
+  mesh_comp = actor->add_component<MeshComponent>();
+  mesh_comp->set_mesh_from_file("cube.dae");
+  box_rigid_body_comp = actor->add_component<BoxRigidBodyComponent>();
+  box_rigid_body_comp->set_half_extents(1.0f, 1.0f, 1.0f);
+  box_rigid_body_comp->set_mass(0.0f);
+
+  actor = scene->add_actor<Actor>();
+  actor->set_position(glm::vec3(0.0f, 20.0f, 0.0f));
+  mesh_comp = actor->add_component<MeshComponent>();
+  mesh_comp->set_mesh_from_file("sphere.dae");
+  auto sphere_rigid_body_comp =
+      actor->add_component<SphereRigidBodyComponent>();
+  sphere_rigid_body_comp->set_radius(1.0f);
+  sphere_rigid_body_comp->set_mass(1.0f);
 
   // actor = scene->add_actor<Actor>();
   // actor->set_position(glm::vec3(3.0f, 0.0f, 0.0f));
