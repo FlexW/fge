@@ -59,7 +59,8 @@ std::shared_ptr<Mesh> ResourceManager::load_mesh(const std::string &filepath)
   }
   else
   {
-    mesh = import_mesh_from_file((resource_path / MESH_DIR / filepath).string());
+    mesh =
+        import_mesh_from_file((resource_path / MESH_DIR / filepath).string());
     mesh_cache[filepath] = mesh;
   }
 
@@ -129,8 +130,9 @@ ResourceManager::load_texture2d(const std::string &filepath, bool flip)
     return iter->second;
   }
 
-  auto texture =
-      load_texture2d_from_file((resource_path / TEXTURE_DIR / filepath).string(), flip);
+  auto texture = load_texture2d_from_file(
+      (resource_path / TEXTURE_DIR / filepath).string(),
+      flip);
 
   texture2d_cache[filepath] = texture;
 

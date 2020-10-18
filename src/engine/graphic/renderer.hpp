@@ -10,8 +10,6 @@
 #include "spot_light.hpp"
 #include "std.hpp"
 #include "vertex_array.hpp"
-#include "vertex_buffer_p.hpp"
-#include "vertex_buffer_pntbt.hpp"
 #include "vertices.hpp"
 
 namespace Fge
@@ -46,11 +44,11 @@ public:
   virtual std::shared_ptr<IndexBuffer>
   create_index_buffer(const std::vector<uint32_t> &indices) = 0;
 
-  virtual std::shared_ptr<VertexBufferPNTBT>
-  create_vertex_buffer_pntbt(const std::vector<VertexPNTBT> &vertices) = 0;
+  virtual std::shared_ptr<VertexBuffer>
+  create_vertex_buffer(const std::vector<VertexPNTBT> &vertices) = 0;
 
-  virtual std::shared_ptr<VertexBufferP>
-  create_vertex_buffer_p(const std::vector<VertexP> &vertices) = 0;
+  virtual std::shared_ptr<VertexBuffer>
+  create_vertex_buffer(const std::vector<VertexP> &vertices) = 0;
 
   virtual std::shared_ptr<Shader>
   create_shader(const std::string &             vertex_shader_filename,

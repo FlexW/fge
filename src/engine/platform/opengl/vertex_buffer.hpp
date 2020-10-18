@@ -1,15 +1,14 @@
 #pragma once
 
+#include "graphic/vertex_buffer.hpp"
 #include "graphic/vertex_buffer_layout.hpp"
-#include "graphic/vertex_buffer_p.hpp"
-#include "graphic/vertex_buffer_pntbt.hpp"
 #include "graphic/vertices.hpp"
 #include "vertex_buffer_layout.hpp"
 
 namespace Fge::Gl
 {
 
-class VertexBufferPNTBT : public Fge::VertexBufferPNTBT
+class VertexBufferPNTBT : public Fge::VertexBuffer
 {
 public:
   VertexBufferPNTBT(const std::vector<VertexPNTBT> &vertices);
@@ -31,7 +30,7 @@ private:
   VertexBufferLayout vertex_buffer_layout;
 };
 
-class VertexBufferP : public Fge::VertexBufferP
+class VertexBufferP : public Fge::VertexBuffer
 {
 public:
   VertexBufferP(const std::vector<VertexP> &vertices);

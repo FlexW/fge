@@ -1,11 +1,12 @@
 #pragma once
 
-#include "graphic/mesh.hpp"
-#include "graphic/texture.hpp"
 #include "std.hpp"
 
 namespace Fge
 {
+
+class Mesh;
+class Texture2D;
 
 class ResourceManager
 {

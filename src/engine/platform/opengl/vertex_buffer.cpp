@@ -1,14 +1,12 @@
 #include "vertex_buffer.hpp"
 #include "gl.hpp"
-#include "graphic/vertex_buffer_p.hpp"
 #include "log/log.hpp"
 
 namespace Fge::Gl
 {
 
 VertexBufferPNTBT::VertexBufferPNTBT(const std::vector<VertexPNTBT> &vertices)
-    : Fge::VertexBufferPNTBT(vertices),
-      count(vertices.size())
+    : count(vertices.size())
 {
   glGenBuffers(1, &id);
   trace("VertexBufferPNTBT", "Created vertex buffer with id: {}", id);
@@ -44,8 +42,7 @@ void VertexBufferPNTBT::unbind() { glBindBuffer(GL_ARRAY_BUFFER, 0); }
 uint32_t VertexBufferPNTBT::get_count() const { return count; }
 
 VertexBufferP::VertexBufferP(const std::vector<VertexP> &vertices)
-    : Fge::VertexBufferP(vertices),
-      count(vertices.size())
+    : count(vertices.size())
 {
   glGenBuffers(1, &id);
   trace("VertexBufferP", "Created vertex buffer with id: {}", id);

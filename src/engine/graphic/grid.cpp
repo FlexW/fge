@@ -28,7 +28,7 @@ Grid::Grid(int32_t size)
   auto app      = Application::get_instance();
   auto renderer = app->get_graphic_manager()->get_renderer();
 
-  auto vertex_buffer = renderer->create_vertex_buffer_p(vertices);
+  auto vertex_buffer = renderer->create_vertex_buffer(vertices);
 
   vertex_array = renderer->create_vertex_array();
   vertex_array->add_buffer(vertex_buffer);

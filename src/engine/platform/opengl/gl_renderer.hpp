@@ -36,11 +36,11 @@ public:
   std::shared_ptr<Fge::IndexBuffer>
   create_index_buffer(const std::vector<uint32_t> &indices) override;
 
-  std::shared_ptr<Fge::VertexBufferPNTBT>
-  create_vertex_buffer_pntbt(const std::vector<VertexPNTBT> &vertices) override;
+  std::shared_ptr<Fge::VertexBuffer>
+  create_vertex_buffer(const std::vector<VertexPNTBT> &vertices) override;
 
-  std::shared_ptr<Fge::VertexBufferP>
-  create_vertex_buffer_p(const std::vector<VertexP> &vertices) override;
+  std::shared_ptr<Fge::VertexBuffer>
+  create_vertex_buffer(const std::vector<VertexP> &vertices) override;
 
   std::shared_ptr<Fge::Shader>
   create_shader(const std::string &             vertex_shader_filename,

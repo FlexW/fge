@@ -81,14 +81,14 @@ Renderer::create_index_buffer(const std::vector<uint32_t> &indices)
   return std::make_shared<Gl::IndexBuffer>(indices);
 }
 
-std::shared_ptr<Fge::VertexBufferPNTBT>
-Renderer::create_vertex_buffer_pntbt(const std::vector<VertexPNTBT> &vertices)
+std::shared_ptr<Fge::VertexBuffer>
+Renderer::create_vertex_buffer(const std::vector<VertexPNTBT> &vertices)
 {
   return std::make_shared<Gl::VertexBufferPNTBT>(vertices);
 }
 
-std::shared_ptr<Fge::VertexBufferP>
-Renderer::create_vertex_buffer_p(const std::vector<VertexP> &vertices)
+std::shared_ptr<Fge::VertexBuffer>
+Renderer::create_vertex_buffer(const std::vector<VertexP> &vertices)
 {
   return std::make_shared<Gl::VertexBufferP>(vertices);
 }
