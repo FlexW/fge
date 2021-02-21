@@ -66,7 +66,7 @@ public:
 
   void add_option(const Option &option);
 
-  void parse_args(int argc, char *argv[]);
+  void parse_args(int argc, const char *argv[]);
 
   bool is_option_set(const std::string &name) const;
 

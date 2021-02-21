@@ -43,16 +43,18 @@ void ArgsParser::add_option_with_value(
 
 void ArgsParser::add_option(const Option &option)
 {
-  if (allowed_options.find(option.name) != allowed_options.end())
+  const auto option_name_with_prefix = argument_prefix + option.name;
+
+  if (allowed_options.find(option_name_with_prefix) != allowed_options.end())
   {
     throw ArgsParserException("Option " + option.name + " already added!",
                               ArgsParserError::OptionAlreadyAdded);
   }
 
-  allowed_options[argument_prefix + option.name] = option;
+  allowed_options[option_name_with_prefix] = option;
 }
 
-void ArgsParser::parse_args(int argc, char *argv[])
+void ArgsParser::parse_args(int argc, const char *argv[])
 {
   for (int i = 1; i < argc; ++i)
   {
