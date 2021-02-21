@@ -86,6 +86,10 @@ private:
 
   std::unordered_map<std::string, Option>    allowed_options;
   std::unordered_map<std::string, SetOption> set_options;
+
+  void check_if_mutually_exclusive_option_set(const std::string &argument);
+  void check_required_options_have_been_set();
+  bool does_option_require_value(const Option &allowed_option);
 };
 
 } // namespace Fge

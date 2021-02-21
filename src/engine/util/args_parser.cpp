@@ -63,25 +63,7 @@ void ArgsParser::parse_args(int argc, const char *argv[])
     const auto allowed_options_iter = allowed_options.find(argument);
     if (allowed_options_iter != allowed_options.end())
     {
-      // Make sure this option is not a mutually exclusive of
-      // another option
-      for (const auto &allowed_option : allowed_options)
-      {
-        for (const auto &mutually_exclusive_option_name :
-             allowed_option.second.mutually_exclusive)
-        {
-          if (argument_prefix + mutually_exclusive_option_name == argument &&
-              is_option_set(allowed_option.second.name))
-          {
-            // Error argument is mutually exclusive
-            throw ArgsParserException(
-                std::string("Option ") + argument +
-                    " is mutually exclusive with option " + argument_prefix +
-                    allowed_option.second.name,
-                ArgsParserError::OptionMutuallyExclusive);
-          }
-        }
-      }
+      check_if_mutually_exclusive_option_set(argument);
 
       const auto allowed_option = allowed_options_iter->second;
 
@@ -90,13 +72,12 @@ void ArgsParser::parse_args(int argc, const char *argv[])
       set_option.name = allowed_option.name;
 
       // Check if option requires a value
-      if (allowed_option.type == OptionType::Value)
+      if (does_option_require_value(allowed_option))
       {
         set_option.type = OptionType::Value;
 
         if (argc <= i + 1)
         {
-          // Error can not read options value
           throw ArgsParserException(
               std::string("Can not read value for option ") + argument,
               ArgsParserError::OptionNoValue);
@@ -113,26 +94,11 @@ void ArgsParser::parse_args(int argc, const char *argv[])
       continue;
     }
 
-    // Error unknown option
     throw ArgsParserException(std::string("Unknown option ") + argument,
                               ArgsParserError::OptionUnknown);
   }
 
-  // Make sure all required options have been set
-  for (const auto &allowed_option : allowed_options)
-  {
-    if (allowed_option.second.importance == OptionImportance::Required)
-    {
-      if (set_options.find(allowed_option.second.name) == set_options.end())
-      {
-        // Error required Option has not been set
-        throw ArgsParserException("Required option " + argument_prefix +
-                                      allowed_option.second.name +
-                                      " has not been set",
-                                  ArgsParserError::OptionMissing);
-      }
-    }
-  }
+  check_required_options_have_been_set();
 }
 
 bool ArgsParser::is_option_set(const std::string &name) const
@@ -197,6 +163,51 @@ std::string ArgsParser::format_help() const
   }
 
   return help.str();
+}
+
+void ArgsParser::check_if_mutually_exclusive_option_set(
+    const std::string &argument)
+{
+  for (const auto &allowed_option : allowed_options)
+  {
+    for (const auto &mutually_exclusive_option_name :
+         allowed_option.second.mutually_exclusive)
+    {
+      if (argument_prefix + mutually_exclusive_option_name == argument &&
+          is_option_set(allowed_option.second.name))
+      {
+        // Error argument is mutually exclusive
+        throw ArgsParserException(std::string("Option ") + argument +
+                                      " is mutually exclusive with option " +
+                                      argument_prefix +
+                                      allowed_option.second.name,
+                                  ArgsParserError::OptionMutuallyExclusive);
+      }
+    }
+  }
+}
+
+bool ArgsParser::does_option_require_value(const Option &allowed_option)
+{
+  return allowed_option.type == OptionType::Value;
+}
+
+void ArgsParser::check_required_options_have_been_set()
+{
+  for (const auto &allowed_option : allowed_options)
+  {
+    if (allowed_option.second.importance == OptionImportance::Required)
+    {
+      if (set_options.find(allowed_option.second.name) == set_options.end())
+      {
+        // Error required Option has not been set
+        throw ArgsParserException("Required option " + argument_prefix +
+                                      allowed_option.second.name +
+                                      " has not been set",
+                                  ArgsParserError::OptionMissing);
+      }
+    }
+  }
 }
 
 } // namespace Fge
