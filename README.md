@@ -43,3 +43,12 @@ Character model is from
 [ThinMatrix](https://www.youtube.com/watch?v=z0jb1OBw45I) other models
 are downloaded from Morgan McGuire's [Computer Graphics
 Archive](https://casual-effects.com/data)
+
+## Development
+
+### Tests
+Run the tests with `ninja check`. It's also possible to execute the
+tests with `ninja test` but this will you get no output on
+failure. Note that `ninja check` will not (re)build the project so for
+development it might be handy to execute `ninja && ninja check`
+instead of just `ninja check`.

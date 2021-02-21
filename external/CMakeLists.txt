@@ -44,3 +44,8 @@ set(BUILD_EXTRAS "OFF" CACHE STRING "")
 set(BUILD_BULLET2_DEMOS "OFF" CACHE STRING "")
 set(INSTALL_LIBS "OFF" CACHE STRING "")
 add_subdirectory(bullet)
+
+# GoogleTest
+if(PACKAGE_TESTS)
+  add_subdirectory(googletest)
+endif()
