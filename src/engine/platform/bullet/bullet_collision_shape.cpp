@@ -4,7 +4,7 @@ namespace Fge::Bullet
 {
 
 BulletSphereCollisionShape::BulletSphereCollisionShape(float radius)
-    : radius(radius),
+    : // radius(radius),
       bt_sphere_shape(new btSphereShape(btScalar(radius)))
 {
 }
@@ -15,9 +15,9 @@ BulletSphereCollisionShape::~BulletSphereCollisionShape()
 }
 
 BulletBoxCollisionShape::BulletBoxCollisionShape(float x, float y, float z)
-    : x(x),
-      y(y),
-      z(z),
+    : // x(x),
+      // y(y),
+      // z(z),
       bt_box_shape(new btBoxShape(btVector3(x, y, z)))
 {
 }

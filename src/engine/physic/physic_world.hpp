@@ -10,6 +10,8 @@ namespace Fge
 class PhysicWorld
 {
 public:
+  virtual ~PhysicWorld() = default;
+
   virtual void update(float delta_time) = 0;
 
   virtual void render() = 0;

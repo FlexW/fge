@@ -31,9 +31,9 @@ private:
   float target_dist = 10.0f;
   float spring_constant = 1.0f;
 
-  glm::vec3 velocity{};
+  // glm::vec3 velocity{};
 
-  glm::vec3 camera_position{};
+  // glm::vec3 camera_position{};
 };
 
 } // namespace Fge

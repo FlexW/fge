@@ -36,7 +36,7 @@ public:
   }
 
 private:
-  float radius{};
+  // float radius{};
 
   btSphereShape *bt_sphere_shape{};
 };
@@ -60,9 +60,9 @@ public:
   }
 
 private:
-  float x;
-  float y;
-  float z;
+  // float x;
+  // float y;
+  // float z;
 
   btBoxShape *bt_box_shape{};
 };
