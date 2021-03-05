@@ -12,6 +12,9 @@
 
 #include "shader.hpp"
 #include "camera.hpp"
+#include "graphic_backend.hpp"
+
+using namespace fge;
 
 constexpr auto OPENGL_VERSION_MAJOR = 4;
 constexpr auto OPENGL_VERSION_MINOR = 6;
@@ -310,26 +313,36 @@ int main(/*int argc, char *argv[]*/)
   Shader ourShader("../resources/shaders/shader.vert",
                    "../resources/shaders/shader.frag");
 
-  uint32_t VBO, VAO;
-  glGenVertexArrays(1, &VAO);
-  glGenBuffers(1, &VBO);
+  gfx::vertex_buffer_layout vb_layout;
+  vb_layout.add_float(3);
+  vb_layout.add_float(2);
 
-  glBindVertexArray(VAO);
+  gfx::memory vb_memory{};
+  vb_memory.data = vertices;
+  vb_memory.size = sizeof(vertices);
 
-  glBindBuffer(GL_ARRAY_BUFFER, VBO);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+  const auto vertex_buffer = gfx::create_vertex_buffer(vb_memory, vb_layout);
 
-  // position attribute
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void *)0);
-  glEnableVertexAttribArray(0);
-  // texture coord attribute
-  glVertexAttribPointer(1,
-                        2,
-                        GL_FLOAT,
-                        GL_FALSE,
-                        5 * sizeof(float),
-                        (void *)(3 * sizeof(float)));
-  glEnableVertexAttribArray(1);
+  // uint32_t VBO, VAO;
+  // glGenVertexArrays(1, &VAO);
+  // glGenBuffers(1, &VBO);
+
+  // glBindVertexArray(VAO);
+
+  // glBindBuffer(GL_ARRAY_BUFFER, VBO);
+  // glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+  // // position attribute
+  // glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void
+  // *)0); glEnableVertexAttribArray(0);
+  // // texture coord attribute
+  // glVertexAttribPointer(1,
+  //                       2,
+  //                       GL_FLOAT,
+  //                       GL_FALSE,
+  //                       5 * sizeof(float),
+  //                       (void *)(3 * sizeof(float)));
+  // glEnableVertexAttribArray(1);
 
   // load and create a texture
   // -------------------------
@@ -452,7 +465,7 @@ int main(/*int argc, char *argv[]*/)
     ourShader.setMat4("view", view);
 
     // render boxes
-    glBindVertexArray(VAO);
+    glBindVertexArray(vertex_buffer.layout_handle);
     for (unsigned int i = 0; i < 10; i++)
     {
       // calculate the model matrix for each object and pass it to shader before

@@ -12,7 +12,7 @@ file(
   "*.cpp"
 )
 
-add_library(engine SHARED ${SOURCE_LIST} ${HEADER_LIST})
+add_library(engine ${SOURCE_LIST} ${HEADER_LIST})
 
 target_link_libraries(
   engine
