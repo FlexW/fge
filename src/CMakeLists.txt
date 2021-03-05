@@ -18,6 +18,7 @@ target_link_libraries(
   engine
   PUBLIC
   glad
+  stb
   ${CONAN_LIBS}
 )
 
