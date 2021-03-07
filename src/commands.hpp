@@ -16,6 +16,8 @@ struct draw_command
 
   vertex_buffer_handle  vertices;
   shader_program_handle shader;
+
+  bool depth_test;
 };
 static_assert(std::is_pod<draw_command>::value == true,
               "draw_command must be a POD.");

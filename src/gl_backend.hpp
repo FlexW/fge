@@ -19,4 +19,8 @@ void set_uniform(const void *data);
 void draw(const void *data);
 
 void render_frame();
+
+void set_render_state(render_state state);
+
+void set_clear_color(float red, float green, float blue, float alpha);
 }

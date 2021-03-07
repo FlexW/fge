@@ -401,6 +401,15 @@ void draw(const void *data)
   FGE_ASSERT(real_data->vertices < vertex_buffers.size());
   const auto vertex_buffer = vertex_buffers[real_data->vertices];
 
+  if (real_data->depth_test)
+  {
+    glEnable(GL_DEPTH_TEST);
+  }
+  else
+  {
+    glDisable(GL_DEPTH_TEST);
+  }
+
   glUseProgram(shader.id);
   glBindVertexArray(vertex_buffer.vao);
 
@@ -421,6 +430,27 @@ void render_frame()
     // TODO: Set state for bucket
     bucket->submit();
   }
+}
+
+void set_render_state(render_state state)
+{
+  GLuint gl_clear_state = 0;
+
+  if ((state & render_state::clear_color) == render_state::clear_color)
+  {
+    gl_clear_state |= GL_COLOR_BUFFER_BIT;
+  }
+  if ((state & render_state::clear_depth) == render_state::clear_depth)
+  {
+    gl_clear_state |= GL_DEPTH_BUFFER_BIT;
+  }
+
+  glClear(gl_clear_state);
+}
+
+void set_clear_color(float red, float green, float blue, float alpha)
+{
+  glClearColor(red, green, blue, alpha);
 }
 
 } // namespace fge::gfx::gl

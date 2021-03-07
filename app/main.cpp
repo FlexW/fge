@@ -311,8 +311,6 @@ int main(/*int argc, char *argv[]*/)
 
   gl_dump_info();
 
-  glEnable(GL_DEPTH_TEST);
-
   std::ifstream vertex_shader_source_ifs("../resources/shaders/shader.vert");
   FGE_ASSERT(vertex_shader_source_ifs.is_open());
   std::string vertex_shader_source(
@@ -401,6 +399,9 @@ int main(/*int argc, char *argv[]*/)
 
   gfx::init_buckets();
   const auto bucket = gfx::command_bucket::create();
+  bucket->set_clear_color(0.2f, 0.3f, 0.3f, 1.0f);
+  bucket->set_state(gfx::render_state::clear_color |
+                    gfx::render_state::clear_depth);
 
   while (!glfwWindowShouldClose(window))
   {
@@ -412,9 +413,6 @@ int main(/*int argc, char *argv[]*/)
 
     gfx::start_frame();
     bucket->clear();
-
-    glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     glm::mat4 projection =
         glm::perspective(glm::radians(camera.Zoom),
@@ -474,7 +472,8 @@ int main(/*int argc, char *argv[]*/)
       auto draw_cube_command =
           bucket->append_command<gfx::draw_command>(set_tex2d2_command);
       draw_cube_command->vertices = vertex_buffer;
-      draw_cube_command->shader   = shader_program;
+      draw_cube_command->shader     = shader_program;
+      draw_cube_command->depth_test = true;
     }
 
     gfx::render_frame();

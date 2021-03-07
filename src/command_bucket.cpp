@@ -30,6 +30,11 @@ static void submit_packet(const command_packet::packet packet)
 
 void command_bucket::submit() const
 {
+  set_render_state(state);
+  gfx::set_clear_color(clear_color.red,
+                       clear_color.green,
+                       clear_color.blue,
+                       clear_color.alpha);
   for (size_t i = 0; i < packet_count; ++i)
   {
     auto packet = packets[i];
@@ -42,6 +47,17 @@ void command_bucket::submit() const
 }
 
 void command_bucket::clear() { packet_count = 0; }
+
+void command_bucket::set_state(render_state state) { this->state = state; }
+
+void command_bucket::set_clear_color(float red,
+                                     float green,
+                                     float blue,
+                                     float alpha)
+{
+
+  clear_color = {red, green, blue, alpha};
+}
 
 void start_frame() { command_packet::start_frame(); }
 

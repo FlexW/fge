@@ -59,6 +59,10 @@ public:
 
   void submit() const;
 
+  void set_state(render_state state);
+
+  void set_clear_color(float red, float green, float blue, float alpha);
+
   void clear();
 
 private:
@@ -68,6 +72,16 @@ private:
   void * packets[MAX_PACKET_COUNT];
 
   uint64_t packet_count = 0;
+
+  render_state state;
+
+  struct
+  {
+    float red;
+    float green;
+    float blue;
+    float alpha;
+  } clear_color;
 
   command_bucket();
 };
