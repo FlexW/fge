@@ -1,4 +1,5 @@
 #include "command_bucket.hpp"
+#include "command_packet.hpp"
 
 namespace fge::gfx
 {
@@ -41,5 +42,9 @@ void command_bucket::submit() const
 }
 
 void command_bucket::clear() { packet_count = 0; }
+
+void start_frame() { command_packet::start_frame(); }
+
+void init_buckets() { command_packet::init_packets(); }
 
 } // namespace fge::gfx

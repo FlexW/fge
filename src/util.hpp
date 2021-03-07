@@ -29,4 +29,6 @@ operator|(TEnum x, TEnum y)
 
 #define FGE_ASSERT(x) assert(x)
 
+#define FGE_FAIL(msg) assert(0 && msg)
+
 } // namespace fge::gfx

@@ -13,6 +13,10 @@ constexpr uint64_t MAX_PACKET_COUNT = 2000;
 
 using key = uint64_t;
 
+void init_buckets();
+
+void start_frame();
+
 class command_bucket
 {
 public:

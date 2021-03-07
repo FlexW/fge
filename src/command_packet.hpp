@@ -3,9 +3,12 @@
 #include <cstddef>
 
 #include "commands.hpp"
+#include "linear_allocator.hpp"
 
 namespace fge::gfx::command_packet
 {
+
+extern LinearAllocator<size_t> linear_allocator;
 
 using packet = void *;
 
@@ -17,7 +20,11 @@ static const size_t OFFSET_COMMAND =
 
 template <typename T> size_t get_size() { return OFFSET_COMMAND + sizeof(T); }
 
-template <typename T> packet create() { return ::operator new(get_size<T>()); }
+template <typename T> packet create()
+{
+  // return ::operator new(get_size<T>());
+  return linear_allocator.allocate(get_size<T>(), 64);
+}
 
 template <typename T> packet *get_next_packet(T *command)
 {
@@ -49,5 +56,9 @@ packet load_next_packet(const packet p);
 dispatch_function load_dispatch_function(const packet p);
 
 const void *load_command(const packet p);
+
+void init_packets();
+
+void start_frame();
 
 } // namespace fge::gfx::command_packet

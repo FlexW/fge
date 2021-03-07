@@ -399,6 +399,7 @@ int main(/*int argc, char *argv[]*/)
 
   stbi_image_free(data);
 
+  gfx::init_buckets();
   const auto bucket = gfx::command_bucket::create();
 
   while (!glfwWindowShouldClose(window))
@@ -409,6 +410,7 @@ int main(/*int argc, char *argv[]*/)
 
     processInput(window);
 
+    gfx::start_frame();
     bucket->clear();
 
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
