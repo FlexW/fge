@@ -1,26 +1,12 @@
 #pragma once
 
-#include <cstddef>
-#include <cstdint>
+#include <string>
 #include <vector>
+
+#include "graphic_backend_types.hpp"
 
 namespace fge::gfx
 {
-
-using vertex_buffer_layout_handle = uint32_t;
-using vertex_buffer_handle        = uint32_t;
-using index_buffer_handle         = uint32_t;
-
-struct memory
-{
-  void *      data{};
-  std::size_t size;
-};
-
-enum class attribute_type
-{
-  floating
-};
 
 class vertex_buffer_layout_element
 {
@@ -42,28 +28,19 @@ private:
   std::vector<vertex_buffer_layout_element> elements;
 };
 
-struct vertex_buffer
-{
-  vertex_buffer_handle        handle{};
-  vertex_buffer_layout_handle layout_handle{};
-};
+vertex_buffer_handle create_vertex_buffer(const memory &              memory,
+                                          const vertex_buffer_layout &layout);
 
-struct index_buffer
-{
-  index_buffer_handle handle{};
-};
+shader_program_handle
+create_shader_program(const std::string &vertex_shader_source,
+                      const std::string &fragment_shader_source);
 
-struct draw_command
-{
-  vertex_buffer vertices;
-  index_buffer  indices;
-};
+texture_handle create_texture(const void *data, const texture_info &info);
 
-vertex_buffer create_vertex_buffer(const memory &              memory,
-                                   const vertex_buffer_layout &layout);
+void draw(const void *data);
 
-index_buffer create_index_buffer(const memory &memory);
+void set_uniform(const void *data);
 
-void draw(const draw_command &draw_command);
+void render_frame();
 
 } // namespace fge::gfx

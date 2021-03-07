@@ -8,11 +8,14 @@
 #include <fmt/format.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+#include <glm/gtx/string_cast.hpp>
 #include <stb_image.h>
 
 #include "shader.hpp"
 #include "camera.hpp"
-#include "graphic_backend.hpp"
+#include "commands.hpp"
+#include "command_bucket.hpp"
 
 using namespace fge;
 
@@ -310,8 +313,24 @@ int main(/*int argc, char *argv[]*/)
 
   glEnable(GL_DEPTH_TEST);
 
-  Shader ourShader("../resources/shaders/shader.vert",
-                   "../resources/shaders/shader.frag");
+  std::ifstream vertex_shader_source_ifs("../resources/shaders/shader.vert");
+  FGE_ASSERT(vertex_shader_source_ifs.is_open());
+  std::string vertex_shader_source(
+      static_cast<std::stringstream const &>(
+          std::stringstream() << vertex_shader_source_ifs.rdbuf())
+          .str());
+  vertex_shader_source_ifs.close();
+
+  std::ifstream fragment_shader_source_ifs("../resources/shaders/shader.frag");
+  FGE_ASSERT(fragment_shader_source_ifs.is_open());
+  std::string fragment_shader_source(
+      static_cast<std::stringstream const &>(
+          std::stringstream() << fragment_shader_source_ifs.rdbuf())
+          .str());
+  fragment_shader_source_ifs.close();
+
+  const auto shader_program =
+      gfx::create_shader_program(vertex_shader_source, fragment_shader_source);
 
   gfx::vertex_buffer_layout vb_layout;
   vb_layout.add_float(3);
@@ -323,163 +342,141 @@ int main(/*int argc, char *argv[]*/)
 
   const auto vertex_buffer = gfx::create_vertex_buffer(vb_memory, vb_layout);
 
-  // uint32_t VBO, VAO;
-  // glGenVertexArrays(1, &VAO);
-  // glGenBuffers(1, &VBO);
-
-  // glBindVertexArray(VAO);
-
-  // glBindBuffer(GL_ARRAY_BUFFER, VBO);
-  // glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-  // // position attribute
-  // glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void
-  // *)0); glEnableVertexAttribArray(0);
-  // // texture coord attribute
-  // glVertexAttribPointer(1,
-  //                       2,
-  //                       GL_FLOAT,
-  //                       GL_FALSE,
-  //                       5 * sizeof(float),
-  //                       (void *)(3 * sizeof(float)));
-  // glEnableVertexAttribArray(1);
-
-  // load and create a texture
-  // -------------------------
-  unsigned int texture1, texture2;
-  // texture 1
-  // ---------
-  glGenTextures(1, &texture1);
-  glBindTexture(GL_TEXTURE_2D, texture1);
-  // set the texture wrapping parameters
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-  // set texture filtering parameters
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-  // load image, create texture and generate mipmaps
   int width, height, nrChannels;
-  stbi_set_flip_vertically_on_load(
-      true); // tell stb_image.h to flip loaded texture's on the y-axis.
+  // tell stb_image.h to flip loaded texture's on the y-axis.
+  stbi_set_flip_vertically_on_load(true);
   unsigned char *data = stbi_load("../resources/textures/container.jpg",
                                   &width,
                                   &height,
                                   &nrChannels,
                                   0);
-  if (data)
-  {
-    glTexImage2D(GL_TEXTURE_2D,
-                 0,
-                 GL_RGB,
-                 width,
-                 height,
-                 0,
-                 GL_RGB,
-                 GL_UNSIGNED_BYTE,
-                 data);
-    glGenerateMipmap(GL_TEXTURE_2D);
-  }
-  else
+  if (!data)
   {
     std::cout << "Failed to load texture" << std::endl;
   }
+
+  gfx::texture_info tex_info1{};
+  tex_info1.type                 = gfx::texture_type::two_d;
+  tex_info1.width                = width;
+  tex_info1.height               = height;
+  tex_info1.wrap_u               = gfx::wrap_mode::repeat;
+  tex_info1.wrap_v               = gfx::wrap_mode::repeat;
+  tex_info1.minification_filter  = gfx::filter_mode::linear;
+  tex_info1.magnification_filter = gfx::filter_mode::linear;
+  tex_info1.internal_format      = gfx::pixel_internal_format::rgb;
+  tex_info1.source_format        = gfx::pixel_format::rgb;
+  tex_info1.source_type          = gfx::pixel_type::ubyte;
+  tex_info1.generate_mipmap      = true;
+
+  const auto texture1 = gfx::create_texture(data, tex_info1);
+
   stbi_image_free(data);
-  // texture 2
-  // ---------
-  glGenTextures(1, &texture2);
-  glBindTexture(GL_TEXTURE_2D, texture2);
-  // set the texture wrapping parameters
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-  // set texture filtering parameters
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-  // load image, create texture and generate mipmaps
+
   data = stbi_load("../resources/textures/awesomeface.png",
                    &width,
                    &height,
                    &nrChannels,
                    0);
-  if (data)
-  {
-    // note that the awesomeface.png has transparency and thus an alpha channel,
-    // so make sure to tell OpenGL the data type is of GL_RGBA
-    glTexImage2D(GL_TEXTURE_2D,
-                 0,
-                 GL_RGB,
-                 width,
-                 height,
-                 0,
-                 GL_RGBA,
-                 GL_UNSIGNED_BYTE,
-                 data);
-    glGenerateMipmap(GL_TEXTURE_2D);
-  }
-  else
+  if (!data)
   {
     std::cout << "Failed to load texture" << std::endl;
   }
+
+  gfx::texture_info tex_info2{};
+  tex_info2.type                 = gfx::texture_type::two_d;
+  tex_info2.width                = width;
+  tex_info2.height               = height;
+  tex_info2.wrap_u               = gfx::wrap_mode::repeat;
+  tex_info2.wrap_v               = gfx::wrap_mode::repeat;
+  tex_info2.minification_filter  = gfx::filter_mode::linear;
+  tex_info2.magnification_filter = gfx::filter_mode::linear;
+  tex_info2.internal_format      = gfx::pixel_internal_format::rgb;
+  tex_info2.source_format        = gfx::pixel_format::rgba;
+  tex_info2.source_type          = gfx::pixel_type::ubyte;
+  tex_info2.generate_mipmap      = true;
+
+  const auto texture2 = gfx::create_texture(data, tex_info2);
+
   stbi_image_free(data);
 
-  ourShader.use();
-  ourShader.setInt("texture1", 0);
-  ourShader.setInt("texture2", 1);
+  const auto bucket = gfx::command_bucket::create();
 
   while (!glfwWindowShouldClose(window))
   {
-    // per-frame time logic
-    // --------------------
     float currentFrame = glfwGetTime();
     deltaTime          = currentFrame - lastFrame;
     lastFrame          = currentFrame;
 
-    // input
-    // -----
     processInput(window);
 
-    // render
-    // ------
+    bucket->clear();
+
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    // bind textures on corresponding texture units
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, texture1);
-    glActiveTexture(GL_TEXTURE1);
-    glBindTexture(GL_TEXTURE_2D, texture2);
-
-    // activate shader
-    ourShader.use();
-
-    // pass projection matrix to shader (note that in this case it could change
-    // every frame)
     glm::mat4 projection =
         glm::perspective(glm::radians(camera.Zoom),
                          (float)window_width / (float)window_height,
                          0.1f,
                          100.0f);
-    ourShader.setMat4("projection", projection);
 
-    // camera/view transformation
     glm::mat4 view = camera.GetViewMatrix();
-    ourShader.setMat4("view", view);
 
-    // render boxes
-    glBindVertexArray(vertex_buffer.layout_handle);
-    for (unsigned int i = 0; i < 10; i++)
+    for (unsigned int i = 0; i < 10; ++i)
     {
-      // calculate the model matrix for each object and pass it to shader before
-      // drawing
-      glm::mat4 model = glm::mat4(
-          1.0f); // make sure to initialize matrix to identity matrix first
-      model       = glm::translate(model, cubePositions[i]);
-      float angle = 20.0f * i;
+      glm::mat4 model  = glm::mat4(1.0f);
+      model            = glm::translate(model, cubePositions[i]);
+      const auto angle = 20.0f * i;
       model =
           glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
-      ourShader.setMat4("model", model);
 
-      glDrawArrays(GL_TRIANGLES, 0, 36);
+      auto set_proj_mat_command =
+          bucket->new_command<gfx::set_uniform_command<glm::mat4>>();
+      set_proj_mat_command->shader = shader_program;
+      set_proj_mat_command->type   = gfx::uniform_type::mat4;
+      set_proj_mat_command->name   = "projection";
+      set_proj_mat_command->data   = projection;
+
+      auto set_view_mat_command =
+          bucket->append_command<gfx::set_uniform_command<glm::mat4>>(
+              set_proj_mat_command);
+      set_view_mat_command->shader = shader_program;
+      set_view_mat_command->type   = gfx::uniform_type::mat4;
+      set_view_mat_command->name   = "view";
+      set_view_mat_command->data   = view;
+
+      auto set_model_mat_command =
+          bucket->append_command<gfx::set_uniform_command<glm::mat4>>(
+              set_view_mat_command);
+      set_model_mat_command->shader = shader_program;
+      set_model_mat_command->type   = gfx::uniform_type::mat4;
+      set_model_mat_command->name   = "model";
+      set_model_mat_command->data   = model;
+
+      auto set_tex2d1_command =
+          bucket->append_command<gfx::set_uniform_command<gfx::texture_handle>>(
+              set_model_mat_command);
+      set_tex2d1_command->shader = shader_program;
+      set_tex2d1_command->type   = gfx::uniform_type::texture2d;
+      set_tex2d1_command->name   = "texture1";
+      set_tex2d1_command->data   = texture1;
+
+      auto set_tex2d2_command =
+          bucket->append_command<gfx::set_uniform_command<gfx::texture_handle>>(
+              set_tex2d1_command);
+      set_tex2d2_command->shader = shader_program;
+      set_tex2d2_command->type   = gfx::uniform_type::texture2d;
+      set_tex2d2_command->name   = "texture2";
+      set_tex2d2_command->data   = texture2;
+
+      auto draw_cube_command =
+          bucket->append_command<gfx::draw_command>(set_tex2d2_command);
+      draw_cube_command->vertices = vertex_buffer;
+      draw_cube_command->shader   = shader_program;
     }
+
+    gfx::render_frame();
+
     glfwSwapBuffers(window);
     glfwPollEvents();
   }

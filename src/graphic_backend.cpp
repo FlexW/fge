@@ -23,15 +23,29 @@ vertex_buffer_layout::get_elements() const
   return elements;
 }
 
-vertex_buffer create_vertex_buffer(const memory &              memory,
-                                   const vertex_buffer_layout &layout)
+vertex_buffer_handle create_vertex_buffer(const memory &              memory,
+                                          const vertex_buffer_layout &layout)
 {
   return gl::create_vertex_buffer(memory, layout);
 }
 
-index_buffer create_index_buffer(const memory &memory)
+shader_program_handle
+create_shader_program(const std::string &vertex_shader_source,
+                      const std::string &fragment_shader_source)
 {
-  return gl::create_index_buffer(memory);
+  return gl::create_shader_program(vertex_shader_source,
+                                   fragment_shader_source);
 }
+
+texture_handle create_texture(const void *data, const texture_info &info)
+{
+  return gl::create_texture(data, info);
+}
+
+void draw(const void *data) { gl::draw(data); }
+
+void set_uniform(const void *data) { gl::set_uniform(data); }
+
+void render_frame() { gl::render_frame(); }
 
 } // namespace fge::gfx
