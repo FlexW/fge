@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdint>
+#include <optional>
 #include <vector>
 
 #include "command_packet.hpp"
@@ -63,6 +64,10 @@ public:
 
   void set_clear_color(float red, float green, float blue, float alpha);
 
+  void set_viewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height);
+
+  void set_framebuffer(framebuffer_handle handle);
+
   void clear();
 
 private:
@@ -82,6 +87,16 @@ private:
     float blue;
     float alpha;
   } clear_color;
+
+  struct
+  {
+    uint32_t x;
+    uint32_t y;
+    uint32_t width;
+    uint32_t height;
+  } viewport;
+
+  std::optional<framebuffer_handle> fb_handle{};
 
   command_bucket();
 };

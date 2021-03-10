@@ -28,4 +28,4 @@ conan_basic_setup()
 
 add_subdirectory(external)
 add_subdirectory(src)
-add_subdirectory(app)
+add_subdirectory(examples)

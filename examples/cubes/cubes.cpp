@@ -1,5 +1,8 @@
+#include <fstream>
 #include <iostream>
+#include <sstream>
 #include <stdexcept>
+#include <string>
 
 // clang-format off
 #include <glad/glad.h>
@@ -12,10 +15,10 @@
 #include <glm/gtx/string_cast.hpp>
 #include <stb_image.h>
 
-#include "shader.hpp"
 #include "camera.hpp"
 #include "commands.hpp"
 #include "command_bucket.hpp"
+#include "root_directory.hpp"
 
 using namespace fge;
 
@@ -311,7 +314,8 @@ int main(/*int argc, char *argv[]*/)
 
   gl_dump_info();
 
-  std::ifstream vertex_shader_source_ifs("../resources/shaders/shader.vert");
+  std::ifstream vertex_shader_source_ifs(
+      (logl_root + "/resources/shaders/shader.vert").c_str());
   FGE_ASSERT(vertex_shader_source_ifs.is_open());
   std::string vertex_shader_source(
       static_cast<std::stringstream const &>(
@@ -319,7 +323,8 @@ int main(/*int argc, char *argv[]*/)
           .str());
   vertex_shader_source_ifs.close();
 
-  std::ifstream fragment_shader_source_ifs("../resources/shaders/shader.frag");
+  std::ifstream fragment_shader_source_ifs(
+      (logl_root + "/resources/shaders/shader.frag").c_str());
   FGE_ASSERT(fragment_shader_source_ifs.is_open());
   std::string fragment_shader_source(
       static_cast<std::stringstream const &>(
@@ -343,11 +348,12 @@ int main(/*int argc, char *argv[]*/)
   int width, height, nrChannels;
   // tell stb_image.h to flip loaded texture's on the y-axis.
   stbi_set_flip_vertically_on_load(true);
-  unsigned char *data = stbi_load("../resources/textures/container.jpg",
-                                  &width,
-                                  &height,
-                                  &nrChannels,
-                                  0);
+  unsigned char *data =
+      stbi_load((logl_root + "/resources/textures/container.jpg").c_str(),
+                &width,
+                &height,
+                &nrChannels,
+                0);
   if (!data)
   {
     std::cout << "Failed to load texture" << std::endl;
@@ -370,7 +376,7 @@ int main(/*int argc, char *argv[]*/)
 
   stbi_image_free(data);
 
-  data = stbi_load("../resources/textures/awesomeface.png",
+  data = stbi_load((logl_root + "/resources/textures/awesomeface.png").c_str(),
                    &width,
                    &height,
                    &nrChannels,
@@ -471,7 +477,7 @@ int main(/*int argc, char *argv[]*/)
 
       auto draw_cube_command =
           bucket->append_command<gfx::draw_command>(set_tex2d2_command);
-      draw_cube_command->vertices = vertex_buffer;
+      draw_cube_command->vertices   = vertex_buffer;
       draw_cube_command->shader     = shader_program;
       draw_cube_command->depth_test = true;
     }

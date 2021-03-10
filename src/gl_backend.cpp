@@ -31,9 +31,21 @@ struct shader
   GLuint next_free_texture_slot = 0;
 };
 
+struct framebuffer
+{
+  GLuint id;
+};
+
+struct renderbuffer
+{
+  GLuint id;
+};
+
 static std::vector<vertex_buffer> vertex_buffers;
 static std::vector<texture>       textures;
 static std::vector<shader>        shaders;
+static std::vector<framebuffer>   framebuffers;
+static std::vector<renderbuffer>  renderbuffers;
 
 struct gl_type_info
 {
@@ -49,6 +61,8 @@ static GLenum to_gl(wrap_mode mode)
     return GL_CLAMP_TO_EDGE;
   case wrap_mode::repeat:
     return GL_REPEAT;
+  case wrap_mode::clamp_to_border:
+    return GL_CLAMP_TO_BORDER;
   default:
     FGE_ASSERT(0 && "Can not handle wrap mode");
   }
@@ -60,6 +74,10 @@ static GLenum to_gl(filter_mode mode)
   {
   case filter_mode::linear:
     return GL_LINEAR;
+  case filter_mode::linear_mipmap_linear:
+    return GL_LINEAR_MIPMAP_LINEAR;
+  case filter_mode::nearest:
+    return GL_NEAREST;
   default:
     FGE_ASSERT(0 && "Can not handle filter mode");
   }
@@ -71,6 +89,8 @@ static GLint to_gl(pixel_internal_format format)
   {
   case pixel_internal_format::rgb:
     return GL_RGB;
+  case pixel_internal_format::depth:
+    return GL_DEPTH_COMPONENT;
   default:
     FGE_ASSERT(0 && "Can not handle pixel internal format");
   }
@@ -84,6 +104,8 @@ static GLint to_gl(pixel_format format)
     return GL_RGB;
   case pixel_format::rgba:
     return GL_RGBA;
+  case pixel_format::depth:
+    return GL_DEPTH_COMPONENT;
   default:
     FGE_ASSERT(0 && "Can not handle pixel format");
   }
@@ -95,6 +117,8 @@ static GLint to_gl(pixel_type type)
   {
   case pixel_type::ubyte:
     return GL_UNSIGNED_BYTE;
+  case pixel_type::floating:
+    return GL_FLOAT;
   default:
     FGE_ASSERT(0 && "Can not handle pixel type");
   }
@@ -322,6 +346,11 @@ texture_handle create_texture(const void *data, const texture_info &info)
                to_gl(info.source_type),
                data);
 
+  if (info.enable_border_color)
+  {
+    glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, info.border_color);
+  }
+
   if (info.generate_mipmap)
   {
     glGenerateMipmap(target);
@@ -335,6 +364,140 @@ texture_handle create_texture(const void *data, const texture_info &info)
   tex.id   = texture_id;
   tex.type = target;
   textures.push_back(tex);
+
+  return handle;
+}
+
+renderbuffer_handle create_renderbuffer(const renderbuffer_info &info)
+{
+  GLuint renderbuffer_id{};
+  glGenRenderbuffers(1, &renderbuffer_id);
+
+  glBindRenderbuffer(GL_RENDERBUFFER, renderbuffer_id);
+
+  glRenderbufferStorage(GL_RENDERBUFFER,
+                        to_gl(info.internal_format),
+                        info.width,
+                        info.height);
+
+  auto handle = renderbuffers.size();
+
+  glBindRenderbuffer(GL_RENDERBUFFER, 0);
+
+  renderbuffer rb;
+  rb.id = renderbuffer_id;
+  renderbuffers.push_back(rb);
+
+  return handle;
+}
+
+framebuffer_handle create_framebuffer(std::vector<attachment_info> attachments)
+{
+  GLuint framebuffer_id{};
+  glGenFramebuffers(1, &framebuffer_id);
+  glBindFramebuffer(GL_FRAMEBUFFER, framebuffer_id);
+
+  GLuint color_attachment_count = 0;
+
+  for (const auto attachment : attachments)
+  {
+    switch (attachment.target_type)
+    {
+    case render_target::renderbuffer:
+    {
+      FGE_ASSERT(attachment.handle < renderbuffers.size());
+      const auto rb              = renderbuffers[attachment.handle];
+      const auto renderbuffer_id = rb.id;
+
+      switch (attachment.type)
+      {
+      case attachment_type::color:
+      {
+        glFramebufferRenderbuffer(GL_FRAMEBUFFER,
+                                  GL_COLOR_ATTACHMENT0 + color_attachment_count,
+                                  GL_RENDERBUFFER,
+                                  renderbuffer_id);
+        ++color_attachment_count;
+      }
+      break;
+      case attachment_type::depth:
+      {
+        glFramebufferRenderbuffer(GL_FRAMEBUFFER,
+                                  GL_DEPTH_ATTACHMENT,
+                                  GL_RENDERBUFFER,
+                                  renderbuffer_id);
+      }
+      break;
+      case attachment_type::stencil:
+      {
+        FGE_FAIL("Can not handle stencil attachment");
+      }
+      break;
+      case attachment_type::depth_stencil:
+      {
+        FGE_FAIL("Can not handle depth stencil attachment");
+      }
+      break;
+      }
+    }
+    break;
+    case render_target::texture:
+    {
+      FGE_ASSERT(attachment.handle < textures.size());
+      const auto tex        = textures[attachment.handle];
+      const auto texture_id = tex.id;
+
+      switch (attachment.type)
+      {
+      case attachment_type::color:
+      {
+        glFramebufferTexture(GL_FRAMEBUFFER,
+                             GL_COLOR_ATTACHMENT0 + color_attachment_count,
+                             texture_id,
+                             0);
+        ++color_attachment_count;
+      }
+      break;
+      case attachment_type::depth:
+      {
+        glFramebufferTexture(GL_FRAMEBUFFER,
+                             GL_DEPTH_ATTACHMENT,
+                             texture_id,
+                             0);
+      }
+      break;
+      case attachment_type::stencil:
+      {
+        FGE_FAIL("Can not handle stencil attachment");
+      }
+      break;
+      case attachment_type::depth_stencil:
+      {
+        FGE_FAIL("Can not handle depth stencil attachment");
+      }
+      break;
+      }
+    }
+    break;
+    }
+  }
+
+  if (attachments.size() == 1 && attachments[0].type == attachment_type::depth)
+  {
+    glDrawBuffer(GL_NONE);
+    glReadBuffer(GL_NONE);
+  }
+
+  FGE_ASSERT(glCheckFramebufferStatus(GL_FRAMEBUFFER) ==
+             GL_FRAMEBUFFER_COMPLETE);
+
+  glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+  const auto handle = framebuffers.size();
+
+  struct framebuffer fb;
+  fb.id = framebuffer_id;
+  framebuffers.push_back(fb);
 
   return handle;
 }
@@ -361,6 +524,16 @@ void set_uniform(const void *data)
         static_cast<const set_uniform_command<glm::mat4> *>(data);
     const auto mat = real_data->data;
     glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(mat));
+  }
+  break;
+
+  case uniform_type::vec3:
+  {
+    // Reinterpret to correct type
+    const auto real_data =
+        static_cast<const set_uniform_command<glm::vec3> *>(data);
+    const auto vec = real_data->data;
+    glUniform3fv(location, 1, glm::value_ptr(vec));
   }
   break;
 
@@ -452,5 +625,20 @@ void set_clear_color(float red, float green, float blue, float alpha)
 {
   glClearColor(red, green, blue, alpha);
 }
+
+void set_viewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height)
+{
+  glViewport(x, y, width, height);
+}
+
+void bind_framebuffer(framebuffer_handle handle)
+{
+  FGE_ASSERT(handle < framebuffers.size());
+  auto fb = framebuffers[handle];
+
+  glBindFramebuffer(GL_FRAMEBUFFER, fb.id);
+}
+
+void bind_default_framebuffer() { glBindFramebuffer(GL_FRAMEBUFFER, 0); }
 
 } // namespace fge::gfx::gl

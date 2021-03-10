@@ -8,12 +8,16 @@
 namespace fge::gfx
 {
 
-using vertex_buffer_layout_handle = uint32_t;
-using vertex_buffer_handle        = uint32_t;
-using index_buffer_handle         = uint32_t;
-using shader_program_handle       = uint32_t;
-using texture_handle              = uint32_t;
-using uniform_handle              = uint32_t;
+using handle_t                    = uint32_t;
+using vertex_buffer_layout_handle = handle_t;
+using vertex_buffer_handle        = handle_t;
+using index_buffer_handle         = handle_t;
+using shader_program_handle       = handle_t;
+using texture_handle              = handle_t;
+using uniform_handle              = handle_t;
+using framebuffer_handle          = handle_t;
+using render_target_handle        = handle_t;
+using renderbuffer_handle         = handle_t;
 
 struct memory
 {
@@ -43,7 +47,8 @@ FGE_ENABLE_BITMASK_OPERATORS(render_state)
 enum class wrap_mode
 {
   repeat,
-  clamp_to_edge
+  clamp_to_edge,
+  clamp_to_border
 };
 
 enum class texture_type
@@ -53,25 +58,30 @@ enum class texture_type
 
 enum class filter_mode
 {
-  linear
+  linear,
+  nearest,
+  linear_mipmap_linear
 };
 
 enum class pixel_internal_format
 {
   rgba,
   rgb,
-  alpha
+  alpha,
+  depth
 };
 
 enum class pixel_format
 {
   rgb,
-  rgba
+  rgba,
+  depth
 };
 
 enum class pixel_type
 {
-  ubyte
+  ubyte,
+  floating
 };
 
 struct texture_info
@@ -93,12 +103,45 @@ struct texture_info
   pixel_type   source_type;
 
   bool generate_mipmap;
+
+  bool  enable_border_color = false;
+  float border_color[4];
+};
+
+struct renderbuffer_info
+{
+  uint32_t width;
+  uint32_t height;
+
+  pixel_internal_format internal_format;
 };
 
 enum class uniform_type
 {
   mat4,
+  vec3,
   texture2d
+};
+
+enum class render_target
+{
+  renderbuffer,
+  texture
+};
+
+enum class attachment_type
+{
+  color,
+  depth,
+  stencil,
+  depth_stencil
+};
+
+struct attachment_info
+{
+  attachment_type      type;
+  render_target        target_type;
+  render_target_handle handle;
 };
 
 } // namespace fge::gfx
