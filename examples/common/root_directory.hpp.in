@@ -1,5 +1,0 @@
-#pragma once
-
-#include <string>
-
-const std::string logl_root = "${CMAKE_SOURCE_DIR}";
