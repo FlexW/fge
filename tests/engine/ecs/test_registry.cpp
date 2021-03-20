@@ -22,7 +22,7 @@ TEST(EcsRegistry, RecycleEntity)
   ecs::registry registry;
 
   const auto entity = registry.create();
-  registry.remove(entity);
+  registry.destroy(entity);
 
   const auto recycled_entity = registry.create();
 
@@ -38,7 +38,7 @@ TEST(EcsRegistry, CheckEntityValid)
 
   EXPECT_TRUE(registry.valid(entity));
 
-  registry.remove(entity);
+  registry.destroy(entity);
 
   EXPECT_FALSE(registry.valid(entity));
 }
@@ -57,4 +57,64 @@ TEST(EcsRegistry, EmplaceComponent)
 
   EXPECT_EQ(int_component, 20);
   EXPECT_EQ(long_component, 212);
+}
+
+TEST(EcsRegistry, TryGet_ComponentDoesNotExist_ReturnNothing)
+{
+  ecs::registry registry;
+
+  const auto entity = registry.create();
+
+  const auto int_component = registry.try_get<int>(entity);
+
+  EXPECT_FALSE(int_component.has_value());
+}
+
+TEST(EcsRegistry, TryGet_ComponentDoesExist_ReturnComponent)
+{
+  ecs::registry registry;
+
+  const auto entity = registry.create();
+  registry.emplace<int>(entity, 20);
+
+  const auto int_component = registry.try_get<int>(entity);
+
+  EXPECT_TRUE(int_component.has_value());
+  EXPECT_EQ(*int_component.value(), 20);
+}
+
+TEST(EcsRegistry, Remove_ComponentExist_RemoveComponent)
+{
+  ecs::registry registry;
+
+  const auto entity = registry.create();
+  registry.emplace<int>(entity, 20);
+
+  registry.remove<int>(entity);
+
+  const auto int_component = registry.try_get<int>(entity);
+
+  EXPECT_FALSE(int_component.has_value());
+}
+
+struct comp_component
+{
+  int a;
+  int b;
+};
+
+TEST(EcsRegistry, Emplace_ComponentCreated_CanModifyComponent)
+{
+  ecs::registry registry;
+
+  const auto entity        = registry.create();
+  auto &     component     = registry.emplace<comp_component>(entity, 1, 2);
+
+  component.a = 5;
+  component.b = 6;
+
+  auto component_from_get = registry.get<comp_component>(entity);
+
+  EXPECT_EQ(component_from_get.a, 5);
+  EXPECT_EQ(component_from_get.b, 6);
 }

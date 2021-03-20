@@ -1,7 +1,9 @@
 #pragma once
 
+#include <bits/c++config.h>
 #include <vector>
 
+#include "entity.hpp"
 #include "util/assert.hpp"
 
 namespace fge::ecs
@@ -17,24 +19,77 @@ template <typename TEntity> class basic_sparse_set
 public:
   void emplace(TEntity entity)
   {
-    FGE_ASSERT(entity.id() >= entity_indices.size());
+    FGE_ASSERT(entity.id() >= sparse_set.size());
 
-    entity_indices.resize(entity.id() + 1);
+    sparse_set.resize(entity.id() + 1);
 
-    const auto entity_index = entities.size();
-    entities.emplace_back(entity);
-    entity_indices[entity.id()] = entity_index;
+    const auto entity_index = dense_set.size();
+
+    dense_entry entity_dense_entry;
+    entity_dense_entry.entity       = entity;
+    entity_dense_entry.sparse_index = entity.id();
+    dense_set.emplace_back(entity_dense_entry);
+
+    sparse_entry entity_sparse_entry;
+    entity_sparse_entry.dense_index = entity_index;
+    sparse_set[entity.id()]         = entity_sparse_entry;
   }
 
-  typename TEntity::id_type index(TEntity entity)
+  typename TEntity::id_type index(TEntity entity) const
   {
-    FGE_ASSERT(entity.id() < entity_indices.size());
+    FGE_ASSERT(entity.id() < sparse_set.size());
 
-    return entity_indices[entity.id()];
+    return sparse_set[entity.id()].dense_index;
   }
+
+  bool contains(const TEntity entity) const
+  {
+    if (entity.id() >= sparse_set.size())
+    {
+      return false;
+    }
+
+    if (!sparse_set[entity.id()].valid)
+    {
+      return false;
+    }
+
+    return true;
+  }
+
+  void remove(const TEntity entity)
+  {
+    FGE_ASSERT(entity.id() < sparse_set.size());
+
+    const auto dense_entry_to_swap = dense_set.back();
+
+    swap_and_pop(sparse_set[entity.id()].dense_index);
+
+    dense_set[sparse_set[entity.id()].dense_index] = dense_entry_to_swap;
+    sparse_set[dense_entry_to_swap.sparse_index].dense_index =
+        sparse_set[entity.id()].dense_index;
+
+    sparse_set[entity.id()].valid = false;
+    dense_set.pop_back();
+  }
+
+protected:
+  virtual void swap_and_pop(typename TEntity::id_type new_index) = 0;
 
 private:
-  std::vector<typename TEntity::id_type> entity_indices;
-  std::vector<TEntity>                   entities;
+  struct sparse_entry
+  {
+    typename TEntity::id_type dense_index;
+    bool                      valid = true;
+  };
+
+  struct dense_entry
+  {
+    typename TEntity::id_type sparse_index;
+    TEntity     entity;
+  };
+
+  std::vector<sparse_entry> sparse_set;
+  std::vector<dense_entry>  dense_set;
 };
-}
+} // namespace fge::ecs

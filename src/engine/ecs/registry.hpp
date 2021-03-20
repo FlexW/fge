@@ -1,6 +1,7 @@
 #pragma once
 
 #include <memory>
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -42,7 +43,7 @@ public:
    *
    * @param entity Entity to remove.
    */
-  void remove(const TEntity &entity)
+  void destroy(const TEntity &entity)
   {
     const auto entity_id = static_cast<typename TEntity::id_type>(entity.id());
     FGE_ASSERT(entity_id < entities.size());
@@ -82,17 +83,57 @@ public:
    * @return The created component.
    */
   template <typename TComponent, typename... TArgs>
-  TComponent emplace(TEntity entity, TArgs &&...component_args)
+  decltype(auto) emplace(TEntity entity, TArgs &&...component_args)
   {
     auto component_pool = assure<TComponent>();
     return component_pool->emplace(entity,
                                    std::forward<TArgs>(component_args)...);
   };
 
-  template <typename TComponent> TComponent get(const TEntity &entity)
+  /**
+   * @brief Return the component of the given entity.
+   *
+   * A invalid entity or if the component does not exist on the
+   * entity, will result in undefined behavior.
+   *
+   * @param entity Entity
+   *
+   * @return Component
+   */
+  template <typename TComponent> decltype(auto) get(const TEntity &entity)
   {
     auto component_pool = assure<TComponent>();
     return component_pool->get(entity);
+  }
+
+  /**
+   * @brief Return the component of the given entity if possible.
+   *
+   * A invalid entity will result in undefined behavior.
+   *
+   * @param entity Entity
+   *
+   * @return Component
+   */
+  template <typename TComponent>
+  std::optional<TComponent *> try_get(const TEntity entity)
+  {
+    auto component_pool = assure<TComponent>();
+    return component_pool->try_get(entity);
+  }
+
+  /**
+   * Removes the component from the given entity
+   *
+   * A invalid entity will result in undefined behavior.
+   *
+   * @tparam TComponent Component
+   * @param entity Entity
+   */
+  template <typename TComponent> void remove(const TEntity entity)
+  {
+    auto component_pool = assure<TComponent>();
+    component_pool->remove(entity);
   }
 
 private:

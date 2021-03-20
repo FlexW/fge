@@ -19,6 +19,13 @@ public:
   using version_type = TVersion;
 
   /**
+   * @brief Create a entity with version and id set to zero.
+   *
+   * @param id Id of the entity.
+   */
+  basic_entity() : entity_version(0), entity_id(0) {}
+
+  /**
    * @brief Create a entity with version set to zero.
    *
    * @param id Id of the entity.
@@ -35,6 +42,24 @@ public:
       : entity_version(version),
         entity_id(id)
   {
+  }
+
+  basic_entity(const basic_entity<TId, TVersion> &other)
+      : entity_version(other.entity_version),
+        entity_id(other.entity_id)
+  {
+  }
+
+  basic_entity(basic_entity<TId, TVersion> &&other)
+      : entity_version(other.entity_version),
+        entity_id(other.entity_id)
+  {
+  }
+
+  void operator=(const basic_entity<TId, TVersion> &other)
+  {
+    entity_version = other.entity_version;
+    entity_id      = other.entity_id;
   }
 
   /**

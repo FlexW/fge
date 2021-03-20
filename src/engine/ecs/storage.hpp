@@ -1,5 +1,6 @@
 #pragma once
 
+#include <optional>
 #include <type_traits>
 #include <utility>
 #include <vector>
@@ -23,7 +24,7 @@ class basic_storage : public basic_sparse_set<TEntity>
 {
 public:
   template <typename... TArgs>
-  TComponent emplace(TEntity entity, TArgs &&...component_args)
+  decltype(auto) emplace(TEntity entity, TArgs &&...component_args)
   {
     // TODO: Assumes same layout like in sparse set -> Tight coupeling
 
@@ -41,13 +42,37 @@ public:
     return components.back();
   }
 
-  TComponent get(TEntity entity)
+  decltype(auto) get(TEntity entity)
   {
     const auto component_index = underlying_type::index(entity);
 
     FGE_ASSERT(component_index < components.size());
 
     return components[component_index];
+  }
+
+  std::optional<TComponent *> try_get(const TEntity entity)
+  {
+    if (!underlying_type::contains(entity))
+    {
+      return {};
+    }
+
+    return &get(entity);
+  }
+
+  void remove(const TEntity entity)
+  {
+    underlying_type::remove(entity);
+    const auto component_index = underlying_type::index(entity);
+  }
+
+protected:
+  void swap_and_pop(typename TEntity::id_type new_index) override
+  {
+    const auto component = components.back();
+    components[new_index] = component;
+    components.pop_back();
   }
 
 private:
