@@ -1,8 +1,13 @@
 #pragma once
 
+#include <memory>
+#include <utility>
 #include <vector>
 
+#include "ecs/type_info.hpp"
 #include "entity.hpp"
+#include "sparse_set.hpp"
+#include "storage.hpp"
 #include "util/assert.hpp"
 
 namespace fge::ecs
@@ -37,7 +42,7 @@ public:
    *
    * @param entity Entity to remove.
    */
-  void remove(TEntity entity)
+  void remove(const TEntity &entity)
   {
     const auto entity_id = static_cast<typename TEntity::id_type>(entity.id());
     FGE_ASSERT(entity_id < entities.size());
@@ -55,7 +60,7 @@ public:
    *
    * @return Whether the entity is valid or not.
    */
-  bool valid(TEntity entity)
+  bool valid(const TEntity &entity) const
   {
     if (entity.id() >= entities.size())
     {
@@ -68,9 +73,33 @@ public:
     return true;
   }
 
+  /**
+   * @brief Add a component to a entity.
+   *
+   * @param entity Entity where component should be added.
+   * @param component_args Arguments for component.
+   *
+   * @return The created component.
+   */
+  template <typename TComponent, typename... TArgs>
+  TComponent emplace(TEntity entity, TArgs &&...component_args)
+  {
+    auto component_pool = assure<TComponent>();
+    return component_pool->emplace(entity,
+                                   std::forward<TArgs>(component_args)...);
+  };
+
+  template <typename TComponent> TComponent get(const TEntity &entity)
+  {
+    auto component_pool = assure<TComponent>();
+    return component_pool->get(entity);
+  }
+
 private:
   std::vector<TEntity> entities;
   std::vector<TEntity> entites_to_recycle;
+
+  std::vector<std::unique_ptr<basic_sparse_set<TEntity>>> component_pools;
 
   TEntity generate_entity()
   {
@@ -92,6 +121,20 @@ private:
     entities[entity_to_recycle.id()] = entity_to_recycle;
 
     return entity_to_recycle;
+  }
+
+  template <typename TComponent> basic_storage<TEntity, TComponent> *assure()
+  {
+    const auto component_type_id = sequential_type_info::type<TComponent>();
+    if (component_type_id >= component_pools.size())
+    {
+      component_pools.resize(component_type_id + 1);
+      component_pools[component_type_id] =
+          std::make_unique<basic_storage<TEntity, TComponent>>();
+    }
+
+    return static_cast<basic_storage<TEntity, TComponent> *>(
+        component_pools[component_type_id].get());
   }
 };
 

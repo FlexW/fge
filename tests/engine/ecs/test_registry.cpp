@@ -42,3 +42,19 @@ TEST(EcsRegistry, CheckEntityValid)
 
   EXPECT_FALSE(registry.valid(entity));
 }
+
+TEST(EcsRegistry, EmplaceComponent)
+{
+  ecs::registry registry;
+
+  const auto entity = registry.create();
+
+  registry.emplace<int>(entity, 20);
+  registry.emplace<long>(entity, 212);
+
+  const auto int_component = registry.get<int>(entity);
+  const auto long_component = registry.get<long>(entity);
+
+  EXPECT_EQ(int_component, 20);
+  EXPECT_EQ(long_component, 212);
+}
