@@ -138,3 +138,48 @@ TEST(EcsRegistry, Emplace_ComponentCreated_CanModifyComponent)
   EXPECT_EQ(component_from_get.a, 5);
   EXPECT_EQ(component_from_get.b, 6);
 }
+
+TEST(EcsRegistry, View_ComponentsAdded_GetViewWithComponent)
+{
+  ecs::registry registry;
+  const auto    entity1 = registry.create();
+  const auto    entity2 = registry.create();
+
+  registry.emplace<int>(entity1, 1);
+  registry.emplace<int>(entity2, 2);
+  registry.emplace<float>(entity2, 3.0);
+
+  const auto entities = registry.view<int>().entities();
+
+  EXPECT_EQ(entities.size(), 2);
+  EXPECT_EQ(registry.get<int>(entities[0]), 1);
+  EXPECT_EQ(registry.get<int>(entities[1]), 2);
+}
+
+TEST(EcsRegistry, View_MultipleComponentsAdded_GetViewWithMultipleComponents)
+{
+  ecs::registry registry;
+  const auto    entity1 = registry.create();
+  const auto    entity2 = registry.create();
+  const auto    entity3 = registry.create();
+
+  registry.emplace<int>(entity1, 1);
+  registry.emplace<int>(entity2, 2);
+  registry.emplace<float>(entity2, 3.0);
+  registry.emplace<int>(entity3, 3);
+  registry.emplace<long>(entity1, 5);
+  registry.emplace<long>(entity2, 6);
+  registry.emplace<long>(entity3, 7);
+
+  const auto entities = registry.view<int, long>().entities();
+
+  EXPECT_EQ(entities.size(), 3);
+
+  EXPECT_EQ(registry.get<int>(entities[0]), 1);
+  EXPECT_EQ(registry.get<int>(entities[1]), 2);
+  EXPECT_EQ(registry.get<int>(entities[2]), 3);
+
+  EXPECT_EQ(registry.get<long>(entities[0]), 5);
+  EXPECT_EQ(registry.get<long>(entities[1]), 6);
+  EXPECT_EQ(registry.get<long>(entities[2]), 7);
+}

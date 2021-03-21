@@ -1,5 +1,6 @@
 #pragma once
 
+#include <algorithm>
 #include <bits/c++config.h>
 #include <vector>
 
@@ -25,10 +26,8 @@ public:
 
     const auto entity_index = dense_set.size();
 
-    dense_entry entity_dense_entry;
-    entity_dense_entry.entity       = entity;
-    entity_dense_entry.sparse_index = entity.id();
-    dense_set.emplace_back(entity_dense_entry);
+    dense_set.emplace_back(entity);
+    sparse_indices.emplace_back(entity.id());
 
     sparse_entry entity_sparse_entry;
     entity_sparse_entry.dense_index = entity_index;
@@ -66,12 +65,17 @@ public:
     swap_and_pop(sparse_set[entity.id()].dense_index);
 
     dense_set[sparse_set[entity.id()].dense_index] = dense_entry_to_swap;
-    sparse_set[dense_entry_to_swap.sparse_index].dense_index =
+    sparse_set[sparse_indices.back()].dense_index =
         sparse_set[entity.id()].dense_index;
 
     sparse_set[entity.id()].valid = false;
     dense_set.pop_back();
+    sparse_indices.pop_back();
   }
+
+  decltype(auto) entities() const { return dense_set; }
+
+  typename TEntity::id_type size() const { return dense_set.size(); }
 
 protected:
   virtual void swap_and_pop(typename TEntity::id_type new_index) = 0;
@@ -83,13 +87,9 @@ private:
     bool                      valid = true;
   };
 
-  struct dense_entry
-  {
-    typename TEntity::id_type sparse_index;
-    TEntity     entity;
-  };
-
   std::vector<sparse_entry> sparse_set;
-  std::vector<dense_entry>  dense_set;
+
+  std::vector<typename TEntity::id_type> sparse_indices;
+  std::vector<TEntity>                   dense_set;
 };
 } // namespace fge::ecs

@@ -10,6 +10,7 @@
 #include "sparse_set.hpp"
 #include "storage.hpp"
 #include "util/assert.hpp"
+#include "view.hpp"
 
 namespace fge::ecs
 {
@@ -136,6 +137,11 @@ public:
     component_pool->remove(entity);
   }
 
+  template <typename... TComponent> basic_view<TEntity> view()
+  {
+    return {assure<TComponent>()...};
+  }
+
 private:
   std::vector<TEntity> entities;
   std::vector<TEntity> entites_to_recycle;
@@ -170,12 +176,18 @@ private:
     if (component_type_id >= component_pools.size())
     {
       component_pools.resize(component_type_id + 1);
+    }
+
+    if (!component_pools[component_type_id])
+    {
       component_pools[component_type_id] =
           std::make_unique<basic_storage<TEntity, TComponent>>();
     }
 
-    return static_cast<basic_storage<TEntity, TComponent> *>(
+    auto component_pool = static_cast<basic_storage<TEntity, TComponent> *>(
         component_pools[component_type_id].get());
+
+    return component_pool;
   }
 };
 
