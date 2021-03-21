@@ -97,6 +97,26 @@ TEST(EcsRegistry, Remove_ComponentExist_RemoveComponent)
   EXPECT_FALSE(int_component.has_value());
 }
 
+TEST(EcsRegistry, Remove_ThreeComponentExist_RemoveMiddleComponent)
+{
+  ecs::registry registry;
+
+  const auto entity = registry.create();
+  registry.emplace<int>(entity, 20);
+  registry.emplace<long>(entity, 30);
+  registry.emplace<long long>(entity, 40);
+
+  registry.remove<long>(entity);
+
+  const auto int_component         = registry.get<int>(entity);
+  const auto long_component = registry.try_get<long>(entity);
+  const auto long_long_component   = registry.get<long long>(entity);
+
+  EXPECT_FALSE(long_component.has_value());
+  EXPECT_EQ(int_component, 20);
+  EXPECT_EQ(long_long_component, 40);
+}
+
 struct comp_component
 {
   int a;
