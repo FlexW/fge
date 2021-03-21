@@ -1,5 +1,10 @@
 #pragma once
 
+#include <memory>
+
+#include "broadcast.hpp"
+#include "window.hpp"
+
 namespace fge::gfx
 {
 
@@ -13,6 +18,11 @@ class renderer
 {
 public:
   /**
+   * @brief Create a new renderer.
+   */
+  renderer(broadcast *application_broadcast);
+
+  /**
    * @brief Initialize the renderer.
    *
    * This function needs to be called before any other function on the renderer.
@@ -24,6 +34,15 @@ public:
    * current frame.
    */
   void render_frame();
+
+  window *get_renderer_window() const;
+
+  void terminate();
+
+private:
+  broadcast *application_broadcast;
+
+  std::unique_ptr<window> renderer_window = nullptr;
 };
 
 } // namespace fge::gfx

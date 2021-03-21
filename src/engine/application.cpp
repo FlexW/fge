@@ -1,14 +1,27 @@
 #include <cstdlib>
 
 #include "application.hpp"
+#include "broadcast.hpp"
 #include "gfx/renderer.hpp"
+#include "gfx/window.hpp"
+#include "util/io_log_sink.hpp"
+#include "util/log.hpp"
 
 namespace fge
 {
 
-application::application() : renderer(new gfx::renderer) {}
+application::application()
+    : application_broadcast(new broadcast),
+      renderer(new gfx::renderer(application_broadcast.get()))
+{
+  start_logger<io_log_sink>(log_level::debug, log_mode::sync);
+}
 
-void application::init(int /*argc*/, char ** /*argv*/) { renderer->init(); }
+void application::init(int /*argc*/, char ** /*argv*/)
+{
+  init_application();
+  renderer->init();
+}
 
 int application::run()
 {
@@ -18,10 +31,27 @@ int application::run()
 
 void application::main_loop()
 {
-  while (true)
+  while (!close_application)
   {
     renderer->render_frame();
   }
+
+  terminate();
+}
+
+void application::terminate()
+{
+  renderer->terminate();
+  terminate_logger();
+}
+
+void application::init_application()
+{
+  application_broadcast->subscribe<gfx::window_close_event>(
+      [&](const gfx::window_close_event &) -> bool {
+        close_application = true;
+        return false;
+      });
 }
 
 } // namespace fge

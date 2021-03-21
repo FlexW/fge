@@ -1,7 +1,9 @@
 #pragma once
 
-#include "gfx/renderer.hpp"
 #include <memory>
+
+#include "broadcast.hpp"
+#include "gfx/renderer.hpp"
 
 namespace fge
 {
@@ -39,9 +41,16 @@ public:
   int run();
 
 private:
+  std::unique_ptr<broadcast>     application_broadcast;
   std::unique_ptr<gfx::renderer> renderer;
 
+  bool close_application = false;
+
   void main_loop();
+
+  void terminate();
+
+  void init_application();
 };
 
 } // namespace fge
