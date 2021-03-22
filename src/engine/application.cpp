@@ -4,6 +4,8 @@
 #include "broadcast.hpp"
 #include "gfx/renderer.hpp"
 #include "gfx/window.hpp"
+#include "layer_stack.hpp"
+#include "systems/render_system.hpp"
 #include "util/io_log_sink.hpp"
 #include "util/log.hpp"
 
@@ -21,6 +23,8 @@ void application::init(int /*argc*/, char ** /*argv*/)
 {
   init_application();
   renderer->init();
+
+  application_layers.init();
 }
 
 int application::run()
@@ -33,6 +37,7 @@ void application::main_loop()
 {
   while (!close_application)
   {
+    application_layers.update();
     renderer->render_frame();
   }
 
@@ -41,6 +46,7 @@ void application::main_loop()
 
 void application::terminate()
 {
+  application_layers.terminate();
   renderer->terminate();
   terminate_logger();
 }

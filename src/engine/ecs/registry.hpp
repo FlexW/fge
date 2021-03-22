@@ -5,6 +5,7 @@
 #include <utility>
 #include <vector>
 
+#include "ecs/fwd.hpp"
 #include "ecs/type_info.hpp"
 #include "entity.hpp"
 #include "sparse_set.hpp"
@@ -28,6 +29,22 @@ namespace fge::ecs
 template <typename TEntity> class basic_registry
 {
 public:
+  basic_registry() {}
+
+  basic_registry(basic_registry<TEntity> &&other)
+      : entities(std::move(other.entities)),
+        entites_to_recycle(std::move(other.entites_to_recycle)),
+        component_pools(std::move(other.component_pools))
+  {
+  }
+
+  void operator=(basic_registry<TEntity> &&other)
+  {
+    entities           = std::move(other.entities);
+    entites_to_recycle = std::move(other.entites_to_recycle);
+    component_pools    = std::move(other.component_pools);
+  }
+
   /**
    * @brief Create a new entity.
    *
@@ -89,7 +106,7 @@ public:
     auto component_pool = assure<TComponent>();
     return component_pool->emplace(entity,
                                    std::forward<TArgs>(component_args)...);
-  };
+  }
 
   /**
    * @brief Return the component of the given entity.

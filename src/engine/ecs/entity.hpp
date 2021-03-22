@@ -163,4 +163,4 @@ template <typename TEntity>
  */
 inline constexpr null_t null{};
 
-}; // namespace fge::ecs
+} // namespace fge::ecs

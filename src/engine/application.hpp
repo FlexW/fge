@@ -1,9 +1,12 @@
 #pragma once
 
 #include <memory>
+#include <vector>
 
 #include "broadcast.hpp"
 #include "gfx/renderer.hpp"
+#include "layer_stack.hpp"
+#include "scn/scene.hpp"
 
 namespace fge
 {
@@ -40,11 +43,18 @@ public:
    */
   int run();
 
+  template <typename TLayer> void add_application_layer()
+  {
+    application_layers.add_layer<TLayer>();
+  }
+
 private:
   std::unique_ptr<broadcast>     application_broadcast;
   std::unique_ptr<gfx::renderer> renderer;
 
   bool close_application = false;
+
+  layer_stack application_layers;
 
   void main_loop();
 

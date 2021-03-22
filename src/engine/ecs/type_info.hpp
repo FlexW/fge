@@ -30,4 +30,4 @@ private:
     return value++;
   }
 };
-};
+} // namespace fge::ecs

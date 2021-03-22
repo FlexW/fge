@@ -81,4 +81,4 @@ private:
   std::vector<TComponent> components;
 };
 
-}; // namespace fge::ecs
+} // namespace fge::ecs
