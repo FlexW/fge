@@ -2,6 +2,7 @@
 
 #include <cstdint>
 #include <functional>
+#include <iostream>
 #include <memory>
 #include <typeindex>
 #include <unordered_map>
@@ -49,7 +50,6 @@ public:
 
   template <typename TEvent> void publish(const TEvent &event)
   {
-
     auto event_handler_lists_iter = event_handler_lists.find(typeid(TEvent));
 
     if (event_handler_lists_iter == event_handler_lists.end())

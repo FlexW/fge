@@ -1,4 +1,5 @@
 #include <cstdlib>
+#include <exception>
 
 #include "application.hpp"
 #include "broadcast.hpp"
@@ -21,15 +22,34 @@ application::application()
 
 void application::init(int /*argc*/, char ** /*argv*/)
 {
-  init_application();
-  renderer->init();
+  try
+  {
+    init_application();
+    renderer->init();
 
-  application_layers.init();
+    application_layers.init();
+  }
+  catch (std::exception &e)
+  {
+    error("application",
+          "Unhandled exception while init application: {}",
+          e.what());
+  }
 }
 
 int application::run()
 {
-  main_loop();
+  delta_timer.start();
+  try
+  {
+    main_loop();
+  }
+  catch (std::exception &e)
+  {
+    error("application",
+          "Unhandled exception while executing main loop: {}",
+          e.what());
+  }
   return EXIT_SUCCESS;
 }
 
@@ -37,7 +57,9 @@ void application::main_loop()
 {
   while (!close_application)
   {
-    application_layers.update();
+    delta_timer.update();
+    renderer->start_frame();
+    application_layers.update(delta_timer.get());
     renderer->render_frame();
   }
 
@@ -55,9 +77,18 @@ void application::init_application()
 {
   application_broadcast->subscribe<gfx::window_close_event>(
       [&](const gfx::window_close_event &) -> bool {
-        close_application = true;
+        close();
         return false;
       });
 }
+
+gfx::renderer *application::get_renderer() { return renderer.get(); }
+
+broadcast *application::get_application_broadcast() const
+{
+  return application_broadcast.get();
+}
+
+void application::close() { close_application = true; }
 
 } // namespace fge

@@ -7,6 +7,7 @@
 #include "gfx/renderer.hpp"
 #include "layer_stack.hpp"
 #include "scn/scene.hpp"
+#include "util/time.hpp"
 
 namespace fge
 {
@@ -45,8 +46,14 @@ public:
 
   template <typename TLayer> void add_application_layer()
   {
-    application_layers.add_layer<TLayer>();
+    application_layers.add_layer<TLayer>(this);
   }
+
+  gfx::renderer *get_renderer();
+
+  broadcast *get_application_broadcast() const;
+
+  void close();
 
 private:
   std::unique_ptr<broadcast>     application_broadcast;
@@ -55,6 +62,7 @@ private:
   bool close_application = false;
 
   layer_stack application_layers;
+  delta_time  delta_timer;
 
   void main_loop();
 

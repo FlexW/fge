@@ -11,11 +11,11 @@ void layer_stack::init()
   }
 }
 
-void layer_stack::update()
+void layer_stack::update(float delta_time)
 {
   for (auto &layer : layers)
   {
-    layer->update();
+    layer->update(delta_time);
   }
 }
 

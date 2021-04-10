@@ -12,7 +12,9 @@ file(
   "*.cpp"
 )
 
-add_library(engine ${SOURCE_LIST} ${HEADER_LIST})
+configure_file(util/resource_root.hpp.in util/resource_root.hpp)
+
+add_library(engine STATIC ${SOURCE_LIST} ${HEADER_LIST})
 
 target_link_libraries(
   engine
@@ -21,6 +23,8 @@ target_link_libraries(
   stb
   ${CONAN_LIBS}
 )
+
+target_include_directories(engine PRIVATE util ${CMAKE_CURRENT_BINARY_DIR}/util)
 
 target_compile_features(engine PUBLIC cxx_std_17)
 

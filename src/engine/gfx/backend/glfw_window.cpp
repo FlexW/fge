@@ -524,9 +524,6 @@ void glfw_window::on_window_framebuffer_size(int width, int height)
 
 void glfw_window::on_mouse_movement(double x, double y)
 {
-  double x_offset = 0.0;
-  double y_offset = 0.0;
-
   if (mouse_first_move)
   {
     mouse_last_x = x;
@@ -534,17 +531,16 @@ void glfw_window::on_mouse_movement(double x, double y)
 
     mouse_first_move = false;
   }
-  else
-  {
-    x_offset = x - mouse_last_x;
-    y_offset = mouse_last_y - y;
 
-    mouse_offset_x = x_offset;
-    mouse_offset_y = y_offset;
+  float x_offset = x - mouse_last_x;
+  // Reversed since y-coordinates go from bottom to top
+  float y_offset = mouse_last_y - y;
 
-    mouse_last_x = x;
-    mouse_last_y = y;
-  }
+  mouse_last_x = x;
+  mouse_last_y = y;
+
+  mouse_offset_x = x_offset;
+  mouse_offset_y = y_offset;
 
   mouse_movement_event event{};
   event.x        = x;
@@ -552,7 +548,7 @@ void glfw_window::on_mouse_movement(double x, double y)
   event.x_offset = x_offset;
   event.y_offset = y_offset;
 
-  application_broadcast->publish(&event);
+  application_broadcast->publish(event);
 }
 
 void glfw_window::on_scroll(double xoffset, double yoffset)
