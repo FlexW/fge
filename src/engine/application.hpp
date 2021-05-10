@@ -55,6 +55,8 @@ public:
 
   void close();
 
+  void set_scene(std::unique_ptr<scn::scene> scene);
+
 private:
   std::unique_ptr<broadcast>     application_broadcast;
   std::unique_ptr<gfx::renderer> renderer;
@@ -63,6 +65,9 @@ private:
 
   layer_stack application_layers;
   delta_time  delta_timer;
+
+  std::unique_ptr<scn::scene> active_scene;
+  std::unique_ptr<scn::scene> new_scene;
 
   void main_loop();
 

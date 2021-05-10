@@ -6,7 +6,6 @@
 #include "gfx/renderer.hpp"
 #include "gfx/window.hpp"
 #include "layer_stack.hpp"
-#include "systems/render_system.hpp"
 #include "util/io_log_sink.hpp"
 #include "util/log.hpp"
 
@@ -58,9 +57,34 @@ void application::main_loop()
   while (!close_application)
   {
     delta_timer.update();
+
+    if (new_scene)
+    {
+      // User changed the active scene.
+      // Destroy the old scene and create new one
+      if (active_scene)
+      {
+        active_scene->destruct();
+      }
+
+      active_scene = std::move(new_scene);
+      new_scene    = nullptr;
+
+      active_scene->create();
+    }
+    if (active_scene)
+    {
+      active_scene->update(delta_timer.get());
+    }
+
     renderer->start_frame();
     application_layers.update(delta_timer.get());
     renderer->render_frame();
+  }
+
+  if (active_scene)
+  {
+    active_scene->destruct();
   }
 
   terminate();
@@ -90,5 +114,10 @@ broadcast *application::get_application_broadcast() const
 }
 
 void application::close() { close_application = true; }
+
+void application::set_scene(std::unique_ptr<scn::scene> scene)
+{
+  new_scene = std::move(scene);
+}
 
 } // namespace fge

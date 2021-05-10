@@ -1,5 +1,6 @@
 #pragma once
 
+#include "broadcast.hpp"
 #include "gfx/camera.hpp"
 #include "gfx/graphic_backend_types.hpp"
 #include "gfx/window.hpp"
@@ -26,6 +27,8 @@ private:
   gfx::texture_handle        awesomeface_texture;
 
   gfx::camera camera;
+
+  broadcast editor_layer_broadcast;
 
   bool on_mouse_movement(const gfx::mouse_movement_event &event);
 

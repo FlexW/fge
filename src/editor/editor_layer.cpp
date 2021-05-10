@@ -1,6 +1,7 @@
 #include <bits/stdint-uintn.h>
 
 #include "application.hpp"
+#include "ecs/fwd.hpp"
 #include "editor_layer.hpp"
 #include "fmt/core.h"
 #include "gfx/camera.hpp"
@@ -9,6 +10,7 @@
 #include "gfx/graphic_backend_types.hpp"
 #include "gfx/window.hpp"
 #include "layer.hpp"
+#include "scn/components.hpp"
 #include "util/filesystem.hpp"
 
 using namespace std::placeholders;
@@ -125,6 +127,24 @@ void editor_layer::init()
   awesomeface_texture =
       gfx::graphic_backend::create_texture(awesomeface_image.data,
                                            awesomeface_tex_info);
+
+  auto scene = std::make_unique<scn::scene>(&editor_layer_broadcast);
+
+  ecs::registry scene_registry;
+  const auto    cube1 = scene_registry.create();
+
+  auto &        cube1_mesh_component =
+      scene_registry.emplace<scn::mesh_component>(cube1);
+  cube1_mesh_component.vertex_buffer = cube_vertex_buffer;
+  cube1_mesh_component.material      = ;
+
+  auto &cube1_transform_component =
+      scene_registry.emplace<scn::transform_component>(cube1);
+  cube1_transform_component.position = ;
+  cube1_transform_component.rotation = ;
+
+  scene->set_registry(std::move(scene_registry));
+  app->set_scene(std::move(scene));
 }
 
 void editor_layer::update(float delta_time)

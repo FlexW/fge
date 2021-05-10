@@ -13,15 +13,15 @@ void scene::create()
 {
   for (auto &system : systems)
   {
-    system->create();
+    system->create(scene_registry);
   }
 }
 
-void scene::update()
+void scene::update(float delta_time)
 {
   for (auto &system : systems)
   {
-    system->update();
+    system->update(scene_registry, delta_time);
   }
 }
 
@@ -29,7 +29,7 @@ void scene::destruct()
 {
   for (auto &system : systems)
   {
-    system->destroy();
+    system->destroy(scene_registry);
   }
 }
 
